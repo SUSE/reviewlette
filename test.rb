@@ -11,6 +11,7 @@ class Reviewlette
     config = YAML.load_file("names.yml")
     @allnames = config
     @name = @allnames.sample
+    
   end
   def namecall
   readfromfile unless @name
@@ -19,14 +20,13 @@ class Reviewlette
    "Yes or No. Type in y or n"
   end 
   def activitystodo
-    config = YAML.load_file("activitys.yml")
-    @allactivity = config
-    @activity = @allactivity.new
+    bconfig = YAML.load_file("activitys.yml")
+    @allactivity = bconfig
+    @activity = @allactivity.sample
   end
   def askuser
    response = gets 
    response = response.chomp
-   readfromfile unless @activity
    if response == "y" then
     "Well then #{@activity}"
    else
@@ -37,10 +37,11 @@ end
 
 roulette= Reviewlette.new
 roulette.readfromfile
+roulette.namecall
 roulette.activitystodo
 puts roulette.namecall
 puts roulette.askuser
-
+puts roulette.activitystodo
 
 
 #do the yml file handling with an api -> next step 
