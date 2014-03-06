@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 require 'yaml'
 
 class Reviewlette
@@ -18,7 +19,7 @@ end
 
 roulette= Reviewlette.new
 roulette.readfromfile
-roulette.namecall
+puts roulette.namecall
 
 
 
