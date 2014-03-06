@@ -18,7 +18,7 @@ end
 
 roulette= Reviewlette.new
 roulette.readfromfile
-roulette.namecall
+puts roulette.namecall
 
 
 
