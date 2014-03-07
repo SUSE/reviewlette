@@ -30,7 +30,7 @@ require 'yaml'
     if response == "y" then
     puts "Well then #{@activity}"
     else
-    puts "Oke bring me someone else"
+    puts "Oke bring me someone else and restart me"
     exit
     end 
    end
@@ -45,8 +45,8 @@ require 'yaml'
     end
    end
    def counter
-    File.open("counter.yml", 'w') do |f1|
-    f1.puts @name
+    File.open("counter.yml", 'a') do |f1|
+    f1.puts "\n"+@name
     end
    end
  end
