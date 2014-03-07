@@ -18,6 +18,6 @@ describe 'reviewlette' do
 
   it 'ensures that there is always a name to output' do
     subject.namecall
-    expect(subject.name).not_to be_nil
+    expect(subject.name).not_t be_nil
   end
 end
