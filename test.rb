@@ -41,11 +41,26 @@ require 'yaml'
       roulette.activitystodo
       roulette.namecall
       roulette.askuser
+      roulette.counter
+    end
+   end
+   def counter
+    File.open("counter.yml", 'w') do |f1|
+    f1.puts @name
     end
    end
  end
 roulette=Reviewlette.new
 roulette.repeater
+
+
+
+
+
+
+
+
+
 #do the yml file handling with an api -> next step 
 #see git-review 
 	
