@@ -1,2 +1,6 @@
 source 'http://rubygems.org'
-gemspec 
+
+gem 'httparty'
+gem 'json'
+gem 'haml'
+gem 'password'
