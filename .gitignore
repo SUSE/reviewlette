@@ -12,6 +12,7 @@ rdoc
 spec/reports
 test/tmp
 test/version_tmp
+.secrets.yml
 tmp
 
 # YARD artifacts
