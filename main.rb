@@ -1,20 +1,47 @@
-require 'httparty'
-require 'json'
-
-token = 'bea3c333a33f0e557d8d84b125eddea8f92cce57'
-
-user = HTTParty.get 'https://api.github.com/user',
-                    headers: {
-                        'Authorization' => "token #{token}",
-                        'User-Agent' => 'jschmid1'
-                    }
+require 'rubygems'
+require 'debugger'
+require '/home/jschmid/reviewlette/mail'
+require '/home/jschmid/reviewlette/auth'
+require '/home/jschmid/reviewlette/nameparser'
 
 
-puts "#{user["login"]}"
+user = Auth::Basic.new
+user.basic_auth
+
+pars = Parse::Contributers.new
+pars.get_names
 
 
-members = HTTParty.get 'https://api.github.com/users',
-                    headers: {
-                        'Authorization' => "token #{token}",
-                        'User-Agent' => 'jschmid1'
-                    }
+puts @@array #debug maybe store it into a file later on
+## bug ! fix tomorrow
+name =  @@array[0]
+
+
+mail = Supporter::Mailer.new
+mail.send_email "jschmid@suse.de", :body => "#{name}"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

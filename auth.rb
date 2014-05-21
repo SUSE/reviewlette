@@ -7,8 +7,8 @@ module Auth
     def basic_auth
       client = Octokit::Client.new \
       :login => 'jschmid1',
-      :password => 'Arschloch1337!'
-      #password = ask("Enter password: ") { |q| q.echo = false }
+
+      :password = ask("Enter password: ") { |q| q.echo = false }
     end
   end
 end
