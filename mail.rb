@@ -10,12 +10,11 @@ module Supporter
       opts[:subject]     ||= "Commanding Officer of the Week"
       opts[:body]        ||= ""
 
-      msg = <<END_OF_MESSAGE
+msg = <<END_OF_MESSAGE
 From: #{opts[:from_alias]} <#{opts[:from]}>
 To: <#{to}>
 Subject: #{opts[:subject]}
-
-      #{opts[:body]}
+#{opts[:body]}
 END_OF_MESSAGE
 
       Net::SMTP.start(opts[:server]) do |smtp|
@@ -23,13 +22,6 @@ END_OF_MESSAGE
       end
     end
 
-
-
-
-
-## make this more generic in order to use it either for COotW and PairProgramming sessions aand reviews
   end
 end
-# name = "asd"
-# a= Supporter::Mailer.new
-# a.send_email "jschmid@suse.de", :body => "#{name}"
+## make this more generic in order to use it either for COotW and PairProgramming sessions and reviews

@@ -7,13 +7,13 @@ require 'net/smtp'
 module Parse
   class Contributers
     def get_names
+      $name_list =[]
       repo = Octokit.repo 'SUSE/smt'
       #using smt because i cant access the private repo happy-customer yet
-      @array =[]
       suse = repo.rels[:contributors].get.data
       suse.each do |a|
         name = a[:login]
-        @array.push(name)
+        $name_list.push(name)
     end
     end
   end
