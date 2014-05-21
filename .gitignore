@@ -1,5 +1,6 @@
 *.gem
 ./idea
+.secrets.yml
 *.rbc
 .bundle
 .config
