@@ -26,7 +26,7 @@ secret = YAML.load_file('.secrets.yml')
 
 
 
-@eval= @client.pull_requests('jschmid1/reviewlette')
+@eval= @client.pull_requests("#{@repo}")
 @pull_list_old = []
 @pull_list = []
 @eval.each do |a|
@@ -39,8 +39,12 @@ secret = YAML.load_file('.secrets.yml')
     name = YAML.load_file('members.yml')
     @client.create_pull_request_comment("#{@repo}", "#{@pull_list[-1]}",
                                         "#{name['member'].sample} is you reviewer :thumbsup:", "#{@sha_id}", '', 1)
+    mail.send_email "#{notimplementedyet}", :body => "#{somegenerated text with a link to the review}"
   end
 end
+
+
+
 
 
 # @client.create_pull_request('jschmid1/reviewlette', 'master', 'review_140521_test_branch', 'title', 'body')
