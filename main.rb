@@ -46,7 +46,7 @@ secret = YAML.load_file('.secrets.yml')
 
 
     # mail.send_email "#{notimplementedyet}", :body => "#{somegenerated text with a link to the review}"
-  # end
+  end
 end
 
 

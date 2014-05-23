@@ -3,39 +3,64 @@ require 'yaml'
 require 'debugger'
 
 
-####### CONFIGURATION #######
+####### CONFIGURATION #############################################################
 CONFIG = YAML.load_file('.trellokey.yml')
 Trello.configure do |config|
   config.developer_public_key = CONFIG['consumerkey']
   config.member_token = CONFIG['oauthtoken']
 end
 me =Trello::Member.find(CONFIG['member'].first)
-############################
+###################################################################################
 
 ####### INITS ##############
 board = Trello::Board.find(CONFIG['board_id'])
+# gitcard = board.cards.find{|c| c.name == provided_by_reviewname}
 ## find the card based on pull-request id (TODO) # convention pls
 acard = Trello::Card.find('71qhMG11')
+## work with fake card and fake board
 ## randomly choose a reviewer
-user = CONFIG['member'].sample
-reviewer = board.members.find{|m| m.username == user}
+
+## have to use a hardcoded list because too many ppl in the board
+
 @member=[]
-reviewer.each do |u|
-  @member.push(reviewer.username)
+# reviewer.each do |u|
+#   @member.push(u.username)
+# end
+###################################################################################
+while (true) do
+  #save users in arrays and shift out
+  user = CONFIG['member'].sample
+  reviewer = board.members.find{|m| m.username == user}
+  if reviewer
+    begin
+      puts "trying to add user #{reviewer.username}"
+        acard.add_member(reviewer)
+        acard.add_comment("#{user}: i will review it")
+        return
+    rescue => error
+      puts error.message
+    end
+  else
+    puts "user #{user} not found in trello board"
+  end
 end
+##loop over add card exit on success
 
 
 
-acard.add_comment("#{user}: i will review it")
-# acard.add_member(reviewer)
+
+## dont know how to catch
 ## if reviewer is already on the card, catch error and try again with another sample (TODO)
 
-listing = board.lists.find {|x| x.name == 'Done'}
+
+list_inreview = board.lists.find {|x| x.name == 'in review'}
+list_done= board.lists.find {|x| x.name == 'Done'}
 ## if reviewstatus is 'closed or merged? == true' move card to done
-# put listings in an array and find it by name
+# (@client.pull_merged?(@repo, @pull_list[-1])) ? acard.move_to_list(list_done) : acard.move_to_list(list_inreview)
 
 
-acard.move_to_list(listing)
+
+
 ## if reviewstatus is 'open or merged? == false' move card to inReview
 
 
