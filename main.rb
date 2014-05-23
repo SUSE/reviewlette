@@ -32,15 +32,21 @@ secret = YAML.load_file('.secrets.yml')
 @eval.each do |a|
   number = a[:number]
   @pull_list_old.push(number)
-  sleep(10)
-  if @pull_list_old.length < @pull_list.push(number).length
-    sha = @client.pull_request("#{@repo}", "#{@pull_list[-1]}" )
+  sleep(100)
+  if @pull_list_old.length > @pull_list.push(number).length
+    sha = @client.pull_request("#{@repo}", "#{@pull_list_old[-1]}" )
     @sha_id= sha.head.sha
     name = YAML.load_file('members.yml')
-    @client.create_pull_request_comment("#{@repo}", "#{@pull_list[-1]}",
-                                        "#{name['member'].sample} is you reviewer :thumbsup:", "#{@sha_id}", '', 1)
-    mail.send_email "#{notimplementedyet}", :body => "#{somegenerated text with a link to the review}"
-  end
+    @client.create_pull_request_comment("#{@repo}", "#{@pull_list_old[-1]}",
+                                        "#{name['member'].sample} is you reviewer :thumbsup:", "#{@sha_id}", '.gitignore', 1)
+
+    @client.update_issue("#{@repo}", "#{@pull_list_old[-1]}", 'title', nil,{:assignee => 'jschmid1'})
+    #find participants ( or edit the names file to github names => value=githubname)
+
+
+
+    # mail.send_email "#{notimplementedyet}", :body => "#{somegenerated text with a link to the review}"
+  # end
 end
 
 
@@ -54,4 +60,3 @@ end
 
 # @user = @client.search_users('jschmid1').inspect
 
-#no mehtod for asssining a teammember to a given issue
