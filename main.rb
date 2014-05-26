@@ -6,49 +6,48 @@ require '/home/jschmid/reviewlette/nameparser'
 require 'yaml'
 require 'octokit'
 
-# user = Auth::Basic.new
-# user.basic_auth
-#
-# pars = Parse::Contributers.new
-# pars.get_names
-#
-# #puts $array #debug maybe store it into a file later on
-# name =  $name_list.sample
-#
+
 # mail = Supporter::Mailer.new
 # mail.send_email "jschmid@suse.de", :body => "#{name}"
-@repo = 'jschmid1/reviewlette'
+repo = 'jschmid1/reviewlette'
 
 secret = YAML.load_file('.secrets.yml')
 @client = Octokit::Client.new(:access_token => secret['token'])
 @client.user_authenticated? ? true : exit
 
+def assignee?(repo)
+  # list issues. if noone is assigned consider it as a new issue and continue
 
-
-
-@eval= @client.pull_requests("#{@repo}")
-@pull_list_old = []
-@pull_list = []
-@eval.each do |a|
-  number = a[:number]
-  @pull_list_old.push(number)
-  sleep(100)
-  if @pull_list_old.length > @pull_list.push(number).length
-    sha = @client.pull_request("#{@repo}", "#{@pull_list_old[-1]}" )
-    @sha_id= sha.head.sha
-    name = YAML.load_file('members.yml')
-    @client.create_pull_request_comment("#{@repo}", "#{@pull_list_old[-1]}",
-                                        "#{name['member'].sample} is you reviewer :thumbsup:", "#{@sha_id}", '.gitignore', 1)
-
-    @client.update_issue("#{@repo}", "#{@pull_list_old[-1]}", 'title', nil,{:assignee => 'jschmid1'})
-    #find participants ( or edit the names file to github names => value=githubname)
-
-
-
-    # mail.send_email "#{notimplementedyet}", :body => "#{somegenerated text with a link to the review}"
+  status = @client.list_issues("#{repo}")
+  status.each do |a|
+    if !(a[:assignee]) == ''
+      eval= @client.pull_requests("#{repo}")
+      @pull_list = []
+      eval.each do |x|
+        number = x[:number]
+        @pull_list.push(number)
+      end
+      add_assignee(@pull_list[-1])
+    end
   end
 end
 
+
+debugger
+def add_assignee(number)
+  #adds assignee, posts comment and sends mail
+
+  name = YAML.load_file('members.yml')
+  # need this to comment on specific files
+  # sha = @client.pull_request("#{@repo}", "#{number}" )
+  # sha_id= sha.head.sha
+  # @client.pull_request_files("#{repo}, #{number}")
+
+  @client.add_comment("#{@repo}", "#{number}", "#{name} is your reviewer")
+  @client.update_issue("#{@repo}", "#{number}", 'title', nil,{:assignee => "#{name}"})
+  #find participants ( or edit the names file to github names => value=githubname)
+  # mail.send_email "#{notimplementedyet}", :body => "#{somegenerated text with a link to the review}"
+end
 
 
 
@@ -60,3 +59,4 @@ end
 
 # @user = @client.search_users('jschmid1').inspect
 
+assignee?(repo)

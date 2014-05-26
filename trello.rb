@@ -35,7 +35,7 @@ while (true) do
   #save users in arrays and shift out
   user = CONFIG['member'].sample
   reviewer = board.members.find{|m| m.username == user}
-  if reviewer
+  if (reviewer)
     begin
         puts "trying to add user #{reviewer.username}"
         acard.add_member(reviewer)
@@ -55,7 +55,7 @@ end
 list_inreview = board.lists.find {|x| x.name == 'in review'}
 list_done= board.lists.find {|x| x.name == 'Done'}
 ## if reviewstatus is 'closed or merged? == true' move card to done
-# (@client.pull_merged?(@repo, @pull_list[-1])) ? acard.move_to_list(list_done) : acard.move_to_list(list_inreview)
+(@client.pull_merged?(@repo, @pull_list[-1])) ? acard.move_to_list(list_done) : acard.move_to_list(list_inreview)
 
 ## if reviewstatus is 'open or merged? == false' move card to inReview
 
