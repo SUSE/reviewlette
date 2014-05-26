@@ -20,12 +20,16 @@ acard = Trello::Card.find('71qhMG11')
 ## work with fake card and fake board
 ## randomly choose a reviewer
 
+## choosing the right card
+
+
 ## have to use a hardcoded list because too many ppl in the board
 
 @member=[]
 # reviewer.each do |u|
 #   @member.push(u.username)
 # end
+debugger
 ###################################################################################
 while (true) do
   #save users in arrays and shift out
@@ -33,7 +37,7 @@ while (true) do
   reviewer = board.members.find{|m| m.username == user}
   if reviewer
     begin
-      puts "trying to add user #{reviewer.username}"
+        puts "trying to add user #{reviewer.username}"
         acard.add_member(reviewer)
         acard.add_comment("#{user}: i will review it")
         return
@@ -44,28 +48,16 @@ while (true) do
     puts "user #{user} not found in trello board"
   end
 end
-##loop over add card exit on success
-
-
-
-
 ## dont know how to catch
 ## if reviewer is already on the card, catch error and try again with another sample (TODO)
-
+##loop over add card exit on success
 
 list_inreview = board.lists.find {|x| x.name == 'in review'}
 list_done= board.lists.find {|x| x.name == 'Done'}
 ## if reviewstatus is 'closed or merged? == true' move card to done
 # (@client.pull_merged?(@repo, @pull_list[-1])) ? acard.move_to_list(list_done) : acard.move_to_list(list_inreview)
 
-
-
-
 ## if reviewstatus is 'open or merged? == false' move card to inReview
-
-
-
-
 
 
 #### STRATEGY #####
