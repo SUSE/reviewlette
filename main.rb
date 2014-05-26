@@ -67,7 +67,7 @@ end
 
 
 def assignee?(repo)
-  # list issues. if noone is assigned consider it as a new issue and continue
+  # list issues. if noone is assigned, consider it as a new issue and continue
   status = @client.list_issues("#{repo}")
   status.each do |a|
     unless a[:assignee]

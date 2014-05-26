@@ -13,20 +13,6 @@ end
 @board = Trello::Board.find(CONFIG['board_id'])
 
 
-def find_card
-  # gitcard = board.cards.find{|c| c.name == provided_by_reviewname}
-  # find the card based on pull-request id (TODO) # convention pls
-  @acard = Trello::Card.find('71qhMG11')
-end
-
-def move_list
-  ## if reviewstatus is 'open or merged? == false' move card to inReview
-  # if reviewstatus is 'closed or merged? == true' move card to done
-  list_inreview = @board.lists.find {|x| x.name == 'in review'}
-  list_done= @board.lists.find {|x| x.name == 'Done'}
-  (@client.pull_merged?(@repo, @pull_list[-1])) ? acard.move_to_list(list_done) : acard.move_to_list(list_inreview)
-end
-
 
 def add_to_card
   while (true) do
