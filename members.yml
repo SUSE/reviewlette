@@ -1,5 +1,11 @@
 member:
- - jschmid1
- - vlewin
+  - jschmid
 
-#b4mboo,kalabiyau, , digitaltom, wstephenson
+# b4mboo,kalabiyau, vlewin , digitaltom, wstephenson
+# The new style with emails
+#
+# MEMBERS['member'].each do |a| mail = a[1] end
+#
+# member:
+#    jschmid1: jschmid@suse.de
+
