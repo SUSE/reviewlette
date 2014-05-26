@@ -22,16 +22,15 @@ GITHUB_CONFIG = YAML.load_file('.github.yml')
 
 
 
-def find_card(title)
-  title='git_review_123123123_trello: 23'
+def find_card(trelloid)
   re1='.*?'	# Non-greedy match on filler
   re2='\\d+'	# Uninteresting: int
   re3='.*?'	# Non-greedy match on filler
   re4='(\\d+)'	# Integer Number 1
   re=(re1+re2+re3+re4)
   m=Regexp.new(re,Regexp::IGNORECASE)
-  if m.match(txt)
-    @id=m.match(title)[1]
+  if m.match(trelloid)
+    @id=m.match(trelloid)[1]
     puts @id
   end
   @acard = @board.cards.find{|c| c.short_id == @id}
@@ -72,9 +71,10 @@ def assignee?(repo)
       @number = a[:number]
       @title = a[:title]
       @body = a[:body]
-      # add_assignee(@number, @title, @body)
-      # move_list(@repo, @number)
       find_card(@title)
+      add_assignee(@number, @title, @body)
+      add_to_card
+      move_list(@repo, @number)
     end
   end
 end
@@ -84,7 +84,6 @@ end
 def add_assignee(number, title, body)
   # adds assignee, posts comment and sends mail
   name = MEMBERS['member'].sample
-  debugger
   # check if a assignee is set? catch error (TODO)
   @client.update_issue("#{@repo}", "#{number}", "#{title}", "#{body}",{:assignee => "#{name}"})
   @client.add_comment("#{@repo}", "#{number}", "#{name} is your reviewer :thumbsup: ")
