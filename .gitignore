@@ -1,6 +1,8 @@
 *.gem
 .idea
 *.rbc
+.github.yml
+*.yml
 .bundle
 .config
 coverage
