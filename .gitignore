@@ -1,5 +1,5 @@
 *.gem
-/.idea
+.idea
 *.rbc
 .bundle
 .config
