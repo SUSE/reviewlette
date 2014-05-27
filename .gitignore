@@ -24,4 +24,5 @@ tmp
 # YARD artifacts
 .yardoc
 _yardoc
+rdoc/
 doc/
