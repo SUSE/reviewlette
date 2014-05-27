@@ -13,6 +13,7 @@ What it does:
 - Locates the right Card on Trello
 - Adds the assigned member to the Card
 - If the Issue/PullRequest is closed or merged move it in the right column
+- Sends a notification mail
 
 
 
