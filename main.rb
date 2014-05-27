@@ -31,7 +31,7 @@ def find_card(trelloid)
   m=Regexp.new(re,Regexp::IGNORECASE)
   if m.match(trelloid)
     @id=m.match(trelloid)[1]
-    puts @id
+    puts "#found #{@id}"
   end
   @acard = @board.cards.find{|c| c.short_id == @id}
 end
