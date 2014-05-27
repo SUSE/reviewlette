@@ -1,5 +1,8 @@
 *.gem
 .idea
+/.idea
+.idea*
+/.idea/*
 *.rbc
 .github.yml
 *.yml
