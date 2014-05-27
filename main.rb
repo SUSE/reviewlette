@@ -15,6 +15,7 @@ end
 @board = Trello::Board.find(TRELLO_CONFIG['board_id'])
 MEMBERS = YAML.load_file('members.yml')
 @mail = Supporter::Mailer.new
+
 @repo = 'jschmid1/reviewlette'
 GITHUB_CONFIG = YAML.load_file('.github.yml')
 @client = Octokit::Client.new(:access_token => GITHUB_CONFIG['token'])
@@ -29,35 +30,56 @@ def find_card(trelloid)
   re4='(\\d+)'	# Integer Number 1
   re=(re1+re2+re3+re4)
   m=Regexp.new(re,Regexp::IGNORECASE)
+
   if m.match(trelloid)
     @id=m.match(trelloid)[1]
-    puts "#found #{@id}"
+    puts "found card nr: #{@id}"
+    acard = @board.cards.find{|c| c.short_id == @id.to_i}
   end
-  @acard = @board.cards.find{|c| c.short_id == @id}
+  acard
 end
 
 
-def add_to_card
-  # need some logic to not assign an already assigned member to the card
-  # still broken
-  user = TRELLO_CONFIG['member'].sample
-  reviewer = @board.members.find{|m| m.username == user}
-  puts "trying to add user #{reviewer.username}"
-  @acard.add_member(reviewer)
-  @acard.add_comment("#{user} will review it")
+
+def find_member_by_id(id)
+  @board.members.find{|m| m.id == id}
 end
 
 
-def move_list(repo, number)
+
+def find_member_by_username(username)
+  @board.members.find{|m| m.username == username}
+end
+
+
+
+def add_reviewer_to_card(card)
+  assignees = card.member_ids.map{|id| find_member_by_id(id)}
+  members = TRELLO_CONFIG['member'].map{|name| find_member_by_username(name) }
+  available_ids = members.map(&:id) - assignees.map(&:id)
+  reviewer = available_ids.map{|id| find_member_by_id(id)}.sample
+  if reviewer
+    card.add_member(reviewer)
+    card.add_comment("#{reviewer.username} will review it")
+    return true
+  else
+    puts "No available reviewer found"
+  end
+  false
+end
+
+
+def move_card_to_list(card, repo, number)
   ## if reviewstatus is 'open or merged? == false' move card to inReview
   # if reviewstatus is 'closed or merged? == true' move card to done
-  list_in_review = @board.lists.find {|x| x.name == 'in review'}
-  list_done= @board.lists.find {|x| x.name == 'Done'}
-  if (@client.pull_merged?(repo, number))
-    @acard.move_to_list(list_done.id)
+
+  if (pull_merged?(repo, number))
+    list_done= @board.lists.find {|x| x.name == 'Done'}
+    card.move_to_list(list_done.id)
     puts "moved to #{list_done.name}"
   else
-    @acard.move_to_list(list_in_review.id)
+    list_in_review = @board.lists.find {|x| x.name == 'in review'}
+    card.move_to_list(list_in_review.id)
     puts "moved to #{list_in_review.name}"
   end
 end
@@ -71,14 +93,23 @@ def assignee?(repo)
       @number = a[:number]
       @title = a[:title]
       @body = a[:body]
-      find_card(@title)
-      add_assignee(@number, @title, @body)
-      add_to_card
-      move_list(@repo, @number)
+
+      card = find_card(@title)
+
+      if card
+        # add_assignee(@number, @title, @body)
+        move_card_to_list(card, @repo, @number) if add_reviewer_to_card(card)
+      else
+        puts "Card not found for title #{@title.inspect}"
+      end
     end
   end
 end
 
+
+def pull_merged?(repo, number)
+  @client.pull_merged?(repo, number)
+end
 
 
 def add_assignee(number, title, body)
