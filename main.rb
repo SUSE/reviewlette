@@ -11,9 +11,8 @@ GITHUB_CONFIG = YAML.load_file('.github.yml')
 MEMBERS_CONFIG = YAML.load_file('members.yml')
 ## Need to log in case of errors
 
-
+# Trello Card Manipulation
 class TrelloCard
-
   # Finds a card due to naming convention
   # Review_1337_name_of_pr_trello_shortid_454
   def find_card(trelloid)
@@ -76,6 +75,8 @@ class TrelloCard
   end
 end
 
+
+# Methods for the GitHub API
 class Github < TrelloCard
   # initialize all the config stuff
   def init
@@ -83,7 +84,6 @@ class Github < TrelloCard
       config.developer_public_key = TRELLO_CONFIG['consumerkey']
       config.member_token = TRELLO_CONFIG['oauthtoken']
     end
-
     @board = Trello::Board.find(TRELLO_CONFIG['board_id'])
     @mail = Supporter::Mailer.new
     @repo = 'jschmid1/reviewlette'
@@ -94,9 +94,7 @@ class Github < TrelloCard
 
   # List issues. If noone is assigned, consider it as a new issue.
   def assignee?(repo)
-    debugger
     status = @client.list_issues("#{repo}")
-    debugger
     status.each do |a|
       unless a[:assignee]
         @number = a[:number]
@@ -132,6 +130,6 @@ class Github < TrelloCard
   end
 end
 
-
 start = Github.new
 start.init
+
