@@ -121,7 +121,6 @@ class Github < TrelloCard
 
   # Adds an assignee to an Github-issue
   def add_assignee(number, title, body)
-    name = MEMBERS_CONFIG['member'].sample
     # Error in here. Not the same name as in Trello.
     @client.update_issue("#{@repo}", "#{number}", "#{title}", "#{body}",{:assignee => "#{name}"})
     @client.add_comment("#{@repo}", "#{number}", "#{name} is your reviewer :thumbsup: ")
@@ -133,3 +132,6 @@ end
 start = Github.new
 start.init
 
+def die_pls
+  return "die pls"
+end

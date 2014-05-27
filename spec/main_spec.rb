@@ -1,26 +1,55 @@
 require 'spec_helper'
-require 'home/jschmid/reviewlette/main.rb'
+require 'trello'
+require 'octokit'
+require '/home/jschmid/reviewlette/main'
 
+#
+# describe Github do
+#   let(:repo) { 'jschmid1/reviewlette' }
+#   let(:number) { 5 }
+#   it 'is merged' do
+#     @github = Github.new
+#     @github.
+#   end
+# end
+
+
+describe "die" do
+  it "dies" do
+    die_pls.should == "die pls"
+  end
+end
 
 
 describe Github do
-  subject { Github.new() }
-  describe "#init" do
-    it "creates a new Github init object" do
-      subject.should be_an_instance_of Github
+  describe "init" do
+    it "inits" do
+      @gh = Github.new
+      @gh.init.should be_true
     end
   end
-
-
-  describe "#assignee?" do
-    it "checks for an unassigend Issue" do
-      subject.should be_an_instance_of Github
-    end
-  end
-
-  describe "#pull_merged?" do
-    it "checks if pull is merged" do
-      subject.pull_merged?(repo, number).should eql (false||true)
+  describe "assignee?" do
+    it "assigns" do
+      @gh.assignee?(@repo).should be_true
     end
   end
 end
+#
+#       Failures:
+#
+#           1) Github assignee? assigns
+#       Failure/Error: @gh.assignee?(@repo).should be_true
+#       NoMethodError:
+#           undefined method `assignee?' for nil:NilClass
+#      # ./spec/main_spec.rb:34:in `block (3 levels) in <top (required)>'
+#
+# Finished in 1.66 seconds
+# 3 examples, 1 failure
+#
+# Failed examples:
+#
+# rspec ./spec/main_spec.rb:33 # Github assignee? assigns
+#
+#     end
+#   end
+# end
