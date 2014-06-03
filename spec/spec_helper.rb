@@ -1,4 +1,12 @@
+require 'trello'
+require 'stringio'
+require 'webmock/rspec'
+require 'rspec'
+require 'webmock'
+
+
 module Helpers
+
   def user_details
     {
         'id' => 'abcdef123456789012345678',
@@ -284,4 +292,7 @@ module Helpers
   def webhook_payload
     JSON.generate(webhooks_details.first)
   end
+end
+def oauth_client
+  Octokit::Client.new(:access_token => '87614b09dd141c22800f96f11737ade5226d7ba8')
 end
