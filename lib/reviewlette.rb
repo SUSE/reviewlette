@@ -11,7 +11,7 @@ module Reviewlette
 
     def spin!
       @trello_connection = Reviewlette::TrelloConnection.new
-      @trello_connection.board.cards.find(123)
+      # @trello_connection.board.cards.find(123)
     end
 
   end
