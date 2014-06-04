@@ -37,7 +37,7 @@ module Reviewlette
       end
     end
 
-    def determine_reviewer( card )
+    def determine_reviewer(card)
       (team - card.assignees).sample
     end
 
