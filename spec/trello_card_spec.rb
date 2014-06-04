@@ -20,8 +20,6 @@ describe TrelloCard do
   end
   describe "#add_reviewer_to_card" do
     it "should collect all card members " do
-      card = double('trellocard')
-      expect(described_class).to receive_message_chain(:member_ids, :map).and_return :bla
 
     end
   end

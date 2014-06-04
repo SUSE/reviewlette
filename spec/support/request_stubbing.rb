@@ -65,7 +65,7 @@ module Helpers
     JSON.generate(lists_details)
   end
 
-  def cards_details
+  def self.cards_details
     [{
          'id' => 'abcdef123456789123456789',
          'idShort' => '1',
@@ -296,4 +296,10 @@ def stub_boards_call
   trello_config = Reviewlette::TrelloConnection::TRELLO_CONFIG
   stub_request(:get, "https://api.trello.com/1/boards/UuKxYj6M?key=#{trello_config['consumerkey']}&token=#{trello_config['oauthtoken']}")
     .to_return(:status => 200, :body => Helpers.boards_details.first.to_json)
+end
+
+def stub_card_call
+  trello_config = Reviewlette::TrelloConnection::TRELLO_CONFIG
+  stub_request(:get, "https://api.trello.com/cards/8SoYLG6A?key=#{trello_config['consumerkey']}&token=#{trello_config['oauthtoken']}")
+  .to_return(:status => 200, :body => Helpers.cards_details.first.to_json)
 end

@@ -60,13 +60,15 @@ describe Reviewlette::TrelloConnection do
 
     before do
       allow_any_instance_of(subject).to receive(:setup_trello).and_return true
-      allow_any_instance_of(subject).to receive(:find_card_by_id).and_return :id
+      allow(subject).to receive(:find_card_by_id).and_return :id
     end
 
     it "finds the right card based on the trello id" do
-      id = 54
-      expect(connection).to receive(:find_card_by_id).with(id).and_return :id
-      connection.find_card_by_id(id)
+      board = double('board')
+      connection.board = board
+      expect(board).to receive_message_chain(:cards, :find)
+      connection.send(:find_card_by_id, 42)
+      #privates with send
     end
 
     it "finds the right card based on the trello id and returns a trello member object" do
@@ -77,6 +79,7 @@ describe Reviewlette::TrelloConnection do
   end
 
   describe '#find_member_by_username(username)' do
+
     let( :connection ) { subject.new }
 
     before do
@@ -93,9 +96,10 @@ describe Reviewlette::TrelloConnection do
       allow(connection).to receive(:find_member_by_username).with('username').and_return :username
       expect(connection.find_member_by_username('username')).to eq :username
     end
-
   end
+
   describe '#find_member_by_id' do
+
     let( :connection ) { subject.new }
 
     before do
@@ -115,7 +119,9 @@ describe Reviewlette::TrelloConnection do
       expect(connection.find_member_by_id(id)).to eq :id
     end
   end
+
   describe '#determine_reviewer' do
+
     let ( :connection ) { subject.new }
 
     before do
@@ -123,10 +129,37 @@ describe Reviewlette::TrelloConnection do
     end
 
     it "determines a valid || free reviewer" do
-      
+      card = stub_card_call
+      allow(connection).to receive(:determine_reviewer).with(card, @members).and_call_original
+      expect(connection.determine_reviewer(card, @members)).to eq :reviewer
+    end
+
+    it "determines a valid || free reviewer" do
+      # member = OpenStruct.new(:name => 'boo', :id => 1)
+      # member2 = OpenStruct.new(:name => 'art', :id => 2)
+      # allow_any_instance_of(Trello::Card).to receive(:assignees).and_return [member]
+      # card = OpenStruct.new(:assignees => [2])
+      card = double('card')
+      allow(card).to receive(:assignees).and_return([2])
+      allow(connection).to receive(:team).and_return([1, 2])
+      expect(connection.determine_reviewer(card)).to eq 1
     end
   end
 
+  describe '#add_reviewer_to_card' do
+
+    let ( :connection ) { subject.new }
+
+    before do
+      allow_any_instance_of(subject).to receive(:setup_trello).and_return true
+    end
+
+    it "" do
+
+    end
+  end
 end
+
+
 
 
