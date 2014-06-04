@@ -6,7 +6,6 @@ class Trello::Card
   def assignees
     member_ids.map{|id| find_member_by_id(id)}
   end
-
 end
 
 module Reviewlette
@@ -41,17 +40,16 @@ module Reviewlette
       (team - card.assignees).sample
     end
 
-    def add_reviewer_to_card(reviewer) # parameter can be determine_reviewer?
-      if reviewer
-        card.add_member(reviewer)
-        card.add_comment("#{reviewer.username} will review it")
-        puts "added #{reviewer} to the card"
-        true
-      else
-        puts "No available reviewer found"
-      end
-      false
+
+    def add_reviewer_to_card(reviewer, card) # parameter can be determine_reviewer?
+      card.add_member(reviewer) if reviewer
     end
+
+
+    def comment_on_card(reviewer, card, body)
+      card.add_comment(determine_reviewer(card) + "#{body}") if reviewer
+    end
+
 
     def team
       @team ||= TRELLO_CONFIG['member'].map{|name| find_member_by_username(name) }

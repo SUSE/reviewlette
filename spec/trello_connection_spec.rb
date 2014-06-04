@@ -113,12 +113,6 @@ describe Reviewlette::TrelloConnection do
     end
 
     it "determines a valid || free reviewer" do
-      card = stub_card_call
-      allow(connection).to receive(:determine_reviewer).with(card, @members).and_call_original
-      expect(connection.determine_reviewer(card, @members)).to eq :reviewer
-    end
-
-    it "determines a valid || free reviewer" do
       # member = OpenStruct.new(:name => 'boo', :id => 1)
       # member2 = OpenStruct.new(:name => 'art', :id => 2)
       # allow_any_instance_of(Trello::Card).to receive(:assignees).and_return [member]
@@ -138,7 +132,31 @@ describe Reviewlette::TrelloConnection do
       allow_any_instance_of(subject).to receive(:setup_trello).and_return true
     end
 
-    it "" do
+    it "adds the valid member to the trello card and comments it" do
+      card = double('card')
+      allow(card).to receive(:add_member).and_return true
+      expect(connection.add_reviewer_to_card('asd', card)).to eq true
+    end
+
+    it "could not add to card cause no valid user " do
+
+    end
+  end
+  describe '#comment_on_card' do
+
+    let ( :connection ) { subject.new }
+
+    before do
+      allow_any_instance_of(subject).to receive(:setup_trello).and_return true
+    end
+
+    it "comments on the assigned trello card " do
+      card = double('card')
+      allow(card).to receive(:add_comment).with('username').and_return true
+      expect(connection.comment_on_card('asd', card)).to eq true
+    end
+
+    it "could not comment cause no valid reviewer " do
 
     end
   end
