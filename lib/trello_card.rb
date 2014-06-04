@@ -19,37 +19,7 @@ class TrelloCard
     end
   end
 
-  def self.find_card_by_id(id)
-    @board.cards.find{|c| c.short_id == id.to_i}
-  end
-  # Finds member by id
-  def find_member_by_id(id)
-    @board.members.find{|m| m.id == id}
-  end
 
-  # Finds member by username
-  def find_member_by_username(username)
-    @board.members.find{|m| m.username == username}
-  end
-
-
-  # Adds a reviewer the trello card (found by (find_card))
-  def self.add_reviewer_to_card(card)
-    assignees = card.member_ids.map{|id| find_member_by_id(id)}
-    members = TRELLO_CONFIG['member'].map{|name| find_member_by_username(name) }
-    available_ids = members.map(&:id) - assignees.map(&:id)
-    reviewer = available_ids.map{|id| find_member_by_id(id)}.sample
-    # removes already assigned==owner of the card from the reviewers list
-    if reviewer
-      card.add_member(reviewer)
-      card.add_comment("#{reviewer.username} will review it")
-      puts "added #{reviewer} to the card"
-      return true
-    else
-      puts "No available reviewer found"
-    end
-    false
-  end
 
   # Automatically moves the card to the right column.
   def move_card_to_list(card, repo, number)

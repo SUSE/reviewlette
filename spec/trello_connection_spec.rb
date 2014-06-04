@@ -33,6 +33,8 @@ describe Reviewlette::TrelloConnection do
 
     before do
       allow_any_instance_of(subject).to receive(:setup_trello).and_return true
+
+
     end
 
     it "conforms to the card id with specific structure" do
@@ -51,4 +53,80 @@ describe Reviewlette::TrelloConnection do
       connection.find_card(line)
     end
   end
+
+  describe '#find_member_by_id(id)' do
+
+    let( :connection ) { subject.new }
+
+    before do
+      allow_any_instance_of(subject).to receive(:setup_trello).and_return true
+      allow_any_instance_of(subject).to receive(:find_card_by_id).and_return :id
+    end
+
+    it "finds the right card based on the trello id" do
+      id = 54
+      expect(connection).to receive(:find_card_by_id).with(id).and_return :id
+      connection.find_card_by_id(id)
+    end
+
+    it "finds the right card based on the trello id and returns a trello member object" do
+      id = 54
+      allow(connection).to receive(:find_card_by_id).with(id).and_return :id
+      expect(connection.find_card_by_id(id)).to eq :id
+    end
+  end
+
+  describe '#find_member_by_username(username)' do
+    let( :connection ) { subject.new }
+
+    before do
+      allow_any_instance_of(subject).to receive(:setup_trello).and_return true
+      allow_any_instance_of(subject).to receive(:find_member_by_username).and_return :username
+    end
+
+    it "finds a member based on a username and returns a trello member object" do
+      expect(connection).to receive(:find_member_by_username).with('username').and_return :username
+      connection.find_member_by_username('username')
+    end
+
+    it "finds a member based on a username and returns a trello member object" do
+      allow(connection).to receive(:find_member_by_username).with('username').and_return :username
+      expect(connection.find_member_by_username('username')).to eq :username
+    end
+
+  end
+  describe '#find_member_by_id' do
+    let( :connection ) { subject.new }
+
+    before do
+      allow_any_instance_of(subject).to receive(:setup_trello).and_return true
+      allow_any_instance_of(subject).to receive(:find_member_by_id).and_return :id
+    end
+
+    it "finds the right member based on the trello id and returns a trello member object" do
+      id = 54
+      expect(connection).to receive(:find_member_by_id).with(id).and_return :id
+      connection.find_member_by_id(id)
+    end
+
+    it "finds the right member based on the trello id and returns a trello member object" do
+      id = 54
+      allow(connection).to receive(:find_member_by_id).with(id).and_return :id
+      expect(connection.find_member_by_id(id)).to eq :id
+    end
+  end
+  describe '#determine_reviewer' do
+    let ( :connection ) { subject.new }
+
+    before do
+      allow_any_instance_of(subject).to receive(:setup_trello).and_return true
+    end
+
+    it "determines a valid || free reviewer" do
+      
+    end
+  end
+
 end
+
+
