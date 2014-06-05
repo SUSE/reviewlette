@@ -17,7 +17,6 @@ module Reviewlette
 
     def initialize
       setup_trello
-      # build_team
     end
 
     def find_card(trelloid)
@@ -47,7 +46,7 @@ module Reviewlette
 
 
     def comment_on_card(reviewer, card, body)
-      card.add_comment(determine_reviewer(card) + "#{body}") if reviewer
+      card.add_comment(determine_reviewer(card) + body) if reviewer
     end
 
 

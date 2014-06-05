@@ -138,8 +138,10 @@ describe Reviewlette::TrelloConnection do
       expect(connection.add_reviewer_to_card('asd', card)).to eq true
     end
 
-    it "could not add to card cause no valid user " do
-
+    it "asd" do
+      card = double('card')
+      expect(connection.add_reviewer_to_card('asd', card)).to eq true
+      connection.add_reviewer_to_card('asd', card)
     end
   end
   describe '#comment_on_card' do
@@ -153,11 +155,25 @@ describe Reviewlette::TrelloConnection do
     it "comments on the assigned trello card " do
       card = double('card')
       allow(card).to receive(:add_comment).with('username').and_return true
-      expect(connection.comment_on_card('asd', card)).to eq true
+      expect(connection.comment_on_card('asd', card, 'asd')).to eq true
+    end
+  end
+
+  describe '#team' do
+    let ( :connection ) { subject.new }
+
+    before do
+      allow_any_instance_of(subject).to receive(:setup_trello).and_return true
     end
 
-    it "could not comment cause no valid reviewer " do
+    it "builds the team member list" do
+      allow(connection).to receive(:team).and_return [1,2]
+      expect(connection.team).to eq [1,2]
+    end
 
+    it "builds the team member list" do
+      expect(connection).to receive(:team).and_return [1,2,3,4]
+      connection.team
     end
   end
 end
