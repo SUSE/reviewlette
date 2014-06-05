@@ -137,13 +137,8 @@ describe Reviewlette::TrelloConnection do
       allow(card).to receive(:add_member).and_return true
       expect(connection.add_reviewer_to_card('asd', card)).to eq true
     end
-
-    it "asd" do
-      card = double('card')
-      expect(connection.add_reviewer_to_card('asd', card)).to eq true
-      connection.add_reviewer_to_card('asd', card)
-    end
   end
+
   describe '#comment_on_card' do
 
     let ( :connection ) { subject.new }
