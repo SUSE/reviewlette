@@ -82,8 +82,7 @@ describe Reviewlette::GithubConnection do
     it 'moves cards to its certain column' do
       card = double('card')
       allow(card).to receive(:move_to_list).with('Done').and_return true
-      expect(connection.move_card_to_list(card, connection.repo, 4)).to be true
-
+      expect(connection.move_card_to_list(card, 'Done')).to be true
     end
   end
 end

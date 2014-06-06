@@ -113,10 +113,6 @@ describe Reviewlette::TrelloConnection do
     end
 
     it "determines a valid || free reviewer" do
-      # member = OpenStruct.new(:name => 'boo', :id => 1)
-      # member2 = OpenStruct.new(:name => 'art', :id => 2)
-      # allow_any_instance_of(Trello::Card).to receive(:assignees).and_return [member]
-      # card = OpenStruct.new(:assignees => [2])
       card = double('card')
       allow(card).to receive(:assignees).and_return([2])
       allow(connection).to receive(:team).and_return([1, 2])

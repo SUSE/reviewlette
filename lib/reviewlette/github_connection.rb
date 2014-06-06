@@ -5,10 +5,14 @@ require 'octokit'
 module Reviewlette
   class GithubConnection
     GITHUB_CONFIG = YAML.load_file('/home/jschmid/reviewlette/config/.github.yml')
-    attr_accessor :client, :repo
+    attr_accessor :client, :repo, :card
 
     def initialize
       gh_connection
+    end
+
+    def trello_connection
+      @trello_connection ||= Reviewlette::TrelloConnection.new
     end
 
     def gh_connection
@@ -38,23 +42,9 @@ module Reviewlette
       end
     end
 
-    def move_card_to_list(card, repo, number)
-      if pull_merged?(repo, number)
-        card.move_to_list(find_column('Done').id)
-        puts "moved to #{find_column('Done').name}"
-      else
-        card.move_to_list(find_column('in-review').id)
-        puts "moved to #{find_column('in-review').name}"
-      end
-    end
 
-    def assignee!(card)
-      if find_card(@title)
-        add_assignee(@number, @title, @body, name)
-        move_card_to_list(card, @repo, @number) if add_reviewer_to_card(card)
-      else
-        puts "Card not found for title #{@title.inspect}"
-      end
+    def move_card_to_list(card, column)
+      card.move_to_list(column)
     end
 
   end
