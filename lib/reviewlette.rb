@@ -3,7 +3,7 @@ require 'octokit'
 require 'trello'
 
 require 'reviewlette/trello_connection'
-#require 'reviewlette/github_connection'
+require 'reviewlette/github_connection'
 
 module Reviewlette
 
@@ -11,7 +11,7 @@ module Reviewlette
 
     def spin!
       @trello_connection = Reviewlette::TrelloConnection.new
-      # @trello_connection.board.cards.find(123)
+      @github_connection = Reviewlette::GithubConnection.new
     end
 
   end

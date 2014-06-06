@@ -54,7 +54,14 @@ module Reviewlette
       @team ||= TRELLO_CONFIG['member'].map{|name| find_member_by_username(name) }
     end
 
+
+  end
+
     private
+
+    def find_column(column_name)
+      @board.lists.find {|x| x.name == column_name}
+    end
 
     def find_member_by_username(username)
       @board.members.find{|m| m.username == username}
@@ -76,4 +83,3 @@ module Reviewlette
       @board = Trello::Board.find(TRELLO_CONFIG['board_id'])
     end
   end
-end
