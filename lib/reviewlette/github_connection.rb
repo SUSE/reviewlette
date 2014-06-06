@@ -21,11 +21,11 @@ module Reviewlette
     end
 
     def add_assignee(number, title, body, name)
-      @client.update_issue("#{repo}", "#{number}", "#{title}", "#{body}",{:assignee => "#{name}"})
+      @client.update_issue(repo, number, title, body, :assignee => name)
     end
 
     def comment_on_issue(number, name)
-      @client.add_comment("#{repo}", "#{number}", "#{name} is your reviewer :thumbsup: ")
+      @client.add_comment(repo, number, "#{name} is your reviewer :thumbsup:")
     end
 
     def determine_assignee(repo)
@@ -48,7 +48,7 @@ module Reviewlette
       end
     end
 
-    def assignee?(card)
+    def assignee!(card)
       if find_card(@title)
         add_assignee(@number, @title, @body, name)
         move_card_to_list(card, @repo, @number) if add_reviewer_to_card(card)
