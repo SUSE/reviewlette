@@ -165,7 +165,3 @@ describe Reviewlette::TrelloConnection do
     end
   end
 end
-
-
-
-

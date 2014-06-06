@@ -5,7 +5,7 @@ describe Reviewlette do
   subject { Reviewlette }
 
   describe '.spin!' do
-    it 'finds a card' do
+    it 'spins it' do
       expect(Reviewlette::TrelloConnection).to receive :new
       subject.spin!
     end

@@ -47,4 +47,3 @@ module Reviewlette
     end
   end
 end
-
