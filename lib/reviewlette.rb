@@ -20,8 +20,7 @@ module Reviewlette
       if @github_connection.assigned?(@repo)
         puts "found one"
         title = @github_connection.assigned?(@repo).each { |a| @title = a[:title] }
-        @trello_connection.find_card( @title )
-        debugger
+        @trello_connection.find_card(title.to_s)
         puts "i did it "
       end
     end
