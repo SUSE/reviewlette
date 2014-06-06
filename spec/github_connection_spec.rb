@@ -19,7 +19,6 @@ describe Reviewlette::GithubConnection do
 
   end
   describe '#pull_merged?' do
-
     let( :connection ) { subject.new }
 
     it 'checks if the pull is merged' do
@@ -31,7 +30,6 @@ describe Reviewlette::GithubConnection do
       allow(connection.client).to receive(:pull_merged?).with('false', 5).and_return false
       expect(connection.pull_merged?('false', 5)).to be false
     end
-
   end
 
 
@@ -44,6 +42,13 @@ describe Reviewlette::GithubConnection do
       allow(connection.client).to receive(:update_issue).with(*params2).and_return true
       expect(connection.add_assignee(*params)).to eq true
     end
+
+    it 'fails to add an assignee to the gh issue' do
+      params = [4, 'title', 'body', 'name']
+      params2 = [connection.repo, 4, 'title', 'body',  :assignee => 'name']
+      allow(connection.client).to receive(:update_issue).with(*params2).and_return false
+      expect(connection.add_assignee(*params)).to eq false
+    end
   end
 
   describe '#comment_on_issue' do
@@ -55,7 +60,8 @@ describe Reviewlette::GithubConnection do
       allow(connection.client).to receive(:add_comment).with(*params).and_return true
       expect(connection.comment_on_issue(*params2)).to eq true
     end
-    it 'comments on a given issue and fails' do
+
+    it 'fails to comment on a given issue and fails' do
       params = [connection.repo, 4, 'name is your reviewer :thumbsup:']
       params2 = [4, 'name']
       allow(connection.client).to receive(:add_comment).with(*params).and_return false
@@ -63,26 +69,32 @@ describe Reviewlette::GithubConnection do
     end
   end
 
-  describe '#determine_assignee' do
+  describe '#assigned?' do
     let( :connection ) { subject.new }
 
-    it 'determines if an assignee is set ' do
+    it 'determine if an assignee is set ' do
       #how to check @number e.g. to contain a hash
     end
 
-    it 'determines if an assignee is set' do
+    it 'fails to determine if an assignee is set' do
       allow(connection.client).to receive_message_chain(:list_issues, :each)
-      connection.determine_assignee(connection.repo)
+      connection.assigned?(connection.repo)
     end
   end
 
   describe '#move_card_to_list' do
     let( :connection ) { subject.new }
 
-    it 'moves cards to its certain column' do
+    it 'move cards to its certain column' do
       card = double('card')
       allow(card).to receive(:move_to_list).with('Done').and_return true
       expect(connection.move_card_to_list(card, 'Done')).to be true
+    end
+
+    it 'fails to  move cards to its certain column' do
+      card = double('card')
+      allow(card).to receive(:move_to_list).with('Done').and_return false
+      expect(connection.move_card_to_list(card, 'Done')).to be false
     end
   end
 end

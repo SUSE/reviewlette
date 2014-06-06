@@ -5,15 +5,15 @@ require 'octokit'
 module Reviewlette
   class GithubConnection
     GITHUB_CONFIG = YAML.load_file('/home/jschmid/reviewlette/config/.github.yml')
-    attr_accessor :client, :repo, :card
+    attr_accessor :client, :repo
 
     def initialize
       gh_connection
     end
 
-    def trello_connection
-      @trello_connection ||= Reviewlette::TrelloConnection.new
-    end
+    # def trello_connection
+    #   @trello_connection ||= Reviewlette::TrelloConnection.new
+    # end
 
     def gh_connection
       @repo = 'jschmid1/reviewlette'
@@ -32,7 +32,7 @@ module Reviewlette
       @client.add_comment(repo, number, "#{name} is your reviewer :thumbsup:")
     end
 
-    def determine_assignee(repo)
+    def assigned?(repo)
       @client.list_issues(repo).each do |a|
         unless a[:assignee]
           @number = a[:number]
@@ -42,11 +42,9 @@ module Reviewlette
       end
     end
 
-
     def move_card_to_list(card, column)
       card.move_to_list(column)
     end
-
   end
 end
 

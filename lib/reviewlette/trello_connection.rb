@@ -1,5 +1,6 @@
 require 'yaml'
 require 'debugger'
+require 'trello'
 
 class Trello::Card
 
@@ -40,13 +41,13 @@ module Reviewlette
     end
 
 
-    def add_reviewer_to_card(reviewer, card) # parameter can be determine_reviewer?
+    def add_reviewer_to_card(reviewer, card)
       card.add_member(reviewer) if reviewer
     end
 
 
     def comment_on_card(reviewer, card, body)
-      card.add_comment(determine_reviewer(card) + body) if reviewer
+      card.add_comment(reviewer + body) if reviewer
     end
 
 
@@ -55,7 +56,6 @@ module Reviewlette
     end
 
 
-  end
 
     private
 
@@ -83,3 +83,4 @@ module Reviewlette
       @board = Trello::Board.find(TRELLO_CONFIG['board_id'])
     end
   end
+end
