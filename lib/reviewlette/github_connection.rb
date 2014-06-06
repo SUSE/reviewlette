@@ -17,12 +17,15 @@ module Reviewlette
     end
 
     def pull_merged?(repo, number)
-      @client.pull_merged?(repo, number)
+      client.pull_merged?(repo, number)
     end
 
     def add_assignee(number, title, body, name)
-      @client.update_issue("#{@repo}", "#{number}", "#{title}", "#{body}",{:assignee => "#{name}"})
-      @client.add_comment("#{@repo}", "#{number}", "#{name} is your reviewer :thumbsup: ")
+      @client.update_issue("#{repo}", "#{number}", "#{title}", "#{body}",{:assignee => "#{name}"})
+    end
+
+    def comment_on_issue(number, name)
+      @client.add_comment("#{repo}", "#{number}", "#{name} is your reviewer :thumbsup: ")
     end
 
     def determine_assignee(repo)
@@ -47,7 +50,7 @@ module Reviewlette
 
     def assignee?(card)
       if find_card(@title)
-        add_assignee(@number, @title, @body)
+        add_assignee(@number, @title, @body, name)
         move_card_to_list(card, @repo, @number) if add_reviewer_to_card(card)
       else
         puts "Card not found for title #{@title.inspect}"

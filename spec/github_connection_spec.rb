@@ -24,7 +24,15 @@ describe Reviewlette::GithubConnection do
 
     it 'checks if the pull is merged' do
       stub_request(:get, "https://api.github.com/repos/aa/pulls/5/merge")
-      expect(subject.new.client).to receive(:pull_merged?).and_return true
+      allow(connection.client).to receive(:pull_merged?).and_return true
+      expect(connection.pull_merged?('asd', 5)).to eq(true)
+      connection.pull_merged?('aa', 5)
+    end
+
+    it 'checks if the pull is not merged' do
+      stub_request(:get, "https://api.github.com/repos/aa/pulls/5/merge")
+      allow(connection.client).to receive(:pull_merged?).and_return false
+      expect(connection.pull_merged?('asd', 5)).to eq(false)
       connection.pull_merged?('aa', 5)
     end
 
@@ -34,8 +42,11 @@ describe Reviewlette::GithubConnection do
   describe '#add_assignee' do
     let( :connection ) { subject.new }
 
-
     it 'adds an assignee to the gh issue' do
+      stub_request(:patch, "https://api.github.com/repos/jschmid1/reviewlette/issues/4")
+      client = double('client')
+      allow(client).to receive(:update_issue).and_return true
+      expect(connection.add_assignee(4, 'title', 'body', 'name')).to eq ""
 
     end
   end
