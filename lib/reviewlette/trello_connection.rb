@@ -41,6 +41,9 @@ module Reviewlette
       (team - card.assignees).sample
     end
 
+    def display_assignees(card)
+      card.assignees
+    end
 
     def add_reviewer_to_card(reviewer, card)
       card.add_member(reviewer) if reviewer
@@ -57,7 +60,7 @@ module Reviewlette
 
 
     def team
-      @team ||= TRELLO_CONFIG['member'].map{|name| find_member_by_username(name) }
+      TRELLO_CONFIG['member'].map{|name| find_member_by_username(name) }
     end
 
 

@@ -11,9 +11,6 @@ module Reviewlette
       gh_connection
     end
 
-    # def trello_connection
-    #   @trello_connection ||= Reviewlette::TrelloConnection.new
-    # end
 
     def gh_connection
       @repo = 'jschmid1/reviewlette'
@@ -28,8 +25,8 @@ module Reviewlette
       @client.update_issue(@repo, number, title, body, :assignee => name)
     end
 
-    def comment_on_issue(repo, number, name)
-      @client.add_comment(repo, number, "#{name} is your reviewer :thumbsup:")
+    def comment_on_issue(number, name)
+      @client.add_comment(@repo, number, "@#{name} is your reviewer :thumbsup:")
     end
 
     def list_issues(repo)
