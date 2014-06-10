@@ -5,7 +5,8 @@ require 'trello'
 class Trello::Card
 
   def assignees
-    member_ids.map{|id| find_member_by_id(id)}
+    @trello_connection = Reviewlette::TrelloConnection.new
+    member_ids.map{|id| @trello_connection.find_member_by_id(id)}
   end
 end
 
@@ -20,17 +21,17 @@ module Reviewlette
       setup_trello
     end
 
-    def find_card(trelloid)
+    def find_card(title)
       re1='.*?'
       re2='\\d+'
       re3='.*?'
       re4='(\\d+)'
       re=(re1+re2+re3+re4)
       m=Regexp.new(re,Regexp::IGNORECASE)
-      if m.match(trelloid)
-        id=m.match(trelloid)[1]
+      if m.match(title)
+        id=m.match(title)[1]
         puts "found card nr: #{id}"
-        find_card_by_id(id)
+        @id = m.match(title)[1]
       else
         nil
       end
@@ -46,8 +47,12 @@ module Reviewlette
     end
 
 
-    def comment_on_card(reviewer, card, body)
-      card.add_comment(reviewer + body) if reviewer
+    def comment_on_card(reviewer, card)
+      card.add_comment(reviewer) if reviewer
+    end
+
+    def move_card_to_list(card, column)
+      card.move_to_list(column)
     end
 
 
@@ -57,7 +62,7 @@ module Reviewlette
 
 
 
-    private
+    # private
 
     def find_column(column_name)
       @board.lists.find {|x| x.name == column_name}

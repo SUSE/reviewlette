@@ -25,25 +25,17 @@ module Reviewlette
     end
 
     def add_assignee(number, title, body, name)
-      @client.update_issue(repo, number, title, body, :assignee => name)
+      @client.update_issue(@repo, number, title, body, :assignee => name)
     end
 
-    def comment_on_issue(number, name)
+    def comment_on_issue(repo, number, name)
       @client.add_comment(repo, number, "#{name} is your reviewer :thumbsup:")
     end
 
-    def assigned?(repo)
-      @client.list_issues(repo).each do |a|
-        unless a[:assignee]
-          @number = a[:number]
-          @title = a[:title]
-          @body = a[:body]
-        end
-      end
+    def list_issues(repo)
+      @client.list_issues(repo)
     end
 
-    def move_card_to_list(card, column)
-      card.move_to_list(column)
-    end
+
   end
 end

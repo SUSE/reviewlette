@@ -69,7 +69,7 @@ describe Reviewlette::GithubConnection do
     end
   end
 
-  describe '#assigned?' do
+  describe '#list_issues' do
     let( :connection ) { subject.new }
 
     it 'determine if an assignee is set ' do
@@ -77,8 +77,8 @@ describe Reviewlette::GithubConnection do
     end
 
     it 'fails to determine if an assignee is set' do
-      allow(connection.client).to receive_message_chain(:list_issues, :each)
-      connection.assigned?(connection.repo)
+      allow(connection.client).to receive_message_chain(:list_issues)
+      connection.list_issues(connection.repo)
     end
   end
 
