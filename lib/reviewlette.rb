@@ -23,8 +23,10 @@ module Reviewlette
   attr_accessor :trello_connection, :github_connection
 
   class << self
+
     NAMES = YAML.load_file('config/.members.yml')
     TRELLO_CONFIG1 = YAML.load_file('config/.trello.yml')
+
     def spin!
       @github_connection = Reviewlette::GithubConnection.new
       @trello_connection = Reviewlette::TrelloConnection.new
@@ -34,40 +36,48 @@ module Reviewlette
 
     def main
       Reviewlette.spin!
+
       @github_connection.list_issues(@repo).each do |a|
         unless a[:assignee]
           @number = a[:number]
           @title = a[:title]
           @body = a[:body]
           @id = @trello_connection.find_card(@title.to_s)
-          if @id then
+
+          if @id
             @card = @trello_connection.find_card_by_id(@id)
           else
             puts "@id is not set"
           end
-          if @card then
+
+          if @card
             while !(@reviewer)
               @reviewer = @trello_connection.determine_reviewer(@card)
             end
           end
 
-          if @reviewer then
+          if @reviewer
             @trelloname = @reviewer.username
           else
             puts "@reviewer is not set"
           end
+
           @githubname = NAMES[@trelloname]
           @github_connection.add_assignee(@number, @title, @body, @githubname)
           @trello_card_url = @card.url
-          @github_connection.comment_on_issue(@number, @githubname, @trello_card_url)
+          @github_connection.comment_on_issue(@number, @githubname, @trello_card_url) if @number && @githubname
 
           begin
-          @trello_connection.add_reviewer_to_card(@reviewer, @card)
+            @trello_connection.add_reviewer_to_card(@reviewer, @card)
           rescue
             puts 'already assigned'
           end
+
           @full_comment = '@' + @trelloname + ' will review ' + 'https://github.com/'+ @repo+'/issues/'+@number.to_s
-          @trello_connection.comment_on_card(@full_comment, @card)
+          @trello_connection.comment_on_card(@full_comment, @card) if @full_comment
+
+          #also search for closed issues and close/move cards
+          #move to done is currently not working
           if @github_connection.pull_merged?(@repo, @id)
             @column = @trello_connection.find_column('Done')
             @trello_connection.move_card_to_list(@card, @column)
@@ -75,6 +85,7 @@ module Reviewlette
             @column = @trello_connection.find_column('In review')
             @trello_connection.move_card_to_list(@card, @column)
           end
+
         end
       end
       puts 'no new issue to work with'
@@ -83,6 +94,3 @@ module Reviewlette
 end
 
 Reviewlette.main
-
-
-
