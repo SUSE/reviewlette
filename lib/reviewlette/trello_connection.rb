@@ -14,7 +14,8 @@ module Reviewlette
 
   class TrelloConnection
 
-    TRELLO_CONFIG = YAML.load_file('/home/jschmid/reviewlette/config/.trello.yml')
+    TRELLO_CONFIG = YAML.load_file('config/.trello.yml')
+    NAMES = YAML.load_file('config/.members.yml')
     attr_accessor :board
 
     def initialize
@@ -38,12 +39,11 @@ module Reviewlette
     end
 
     def determine_reviewer(card)
-      (team - card.assignees).sample
+      username = (team - card.assignees.map(&:username)).sample
+      find_member_by_username(username)
     end
 
-    def display_assignees(card)
-      card.assignees
-    end
+
 
     def add_reviewer_to_card(reviewer, card)
       card.add_member(reviewer) if reviewer
@@ -60,7 +60,7 @@ module Reviewlette
 
 
     def team
-      TRELLO_CONFIG['member'].map{|name| find_member_by_username(name) }
+      @team ||= NAMES.keys
     end
 
 

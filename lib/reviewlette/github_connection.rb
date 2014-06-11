@@ -4,7 +4,8 @@ require 'octokit'
 
 module Reviewlette
   class GithubConnection
-    GITHUB_CONFIG = YAML.load_file('/home/jschmid/reviewlette/config/.github.yml')
+    GITHUB_CONFIG = YAML.load_file('config/.github.yml')
+    NAMES = YAML.load_file('config/.members.yml')
     attr_accessor :client, :repo
 
     def initialize
@@ -25,14 +26,17 @@ module Reviewlette
       @client.update_issue(@repo, number, title, body, :assignee => name)
     end
 
-    def comment_on_issue(number, name)
-      @client.add_comment(@repo, number, "@#{name} is your reviewer :thumbsup:")
+    def comment_on_issue(number, name, trello_card_url)
+      @client.add_comment(@repo, number, "@#{name} is your reviewer :thumbsup: check #{trello_card_url}")
     end
 
     def list_issues(repo)
       @client.list_issues(repo)
     end
 
+    def team
+      @team ||= NAMES.values
+    end
 
   end
 end
