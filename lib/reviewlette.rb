@@ -27,16 +27,15 @@ module Reviewlette
     NAMES = YAML.load_file('config/.members.yml')
     TRELLO_CONFIG1 = YAML.load_file('config/.trello.yml')
 
-    def spin!
+    def setup
       @github_connection = Reviewlette::GithubConnection.new
       @trello_connection = Reviewlette::TrelloConnection.new
       @board = Trello::Board.find(TRELLO_CONFIG1['board_id'])
       @repo = 'jschmid1/reviewlette'
     end
 
-    def main
-      Reviewlette.spin!
-
+    def spin
+      Reviewlette.setup
       @github_connection.list_issues(@repo).each do |a|
         unless a[:assignee]
           @number = a[:number]
@@ -49,9 +48,8 @@ module Reviewlette
           else
             puts "@id is not set"
           end
-
           if @card
-            until @reviewer
+            while !(@reviewer)
               @reviewer = @trello_connection.determine_reviewer(@card)
             end
           end
@@ -86,8 +84,7 @@ module Reviewlette
 
         end
       end
-      puts 'no new issue to work with'
+      puts 'No more new issues to work with.'
     end
   end
 end
-# Reviewlette.main
