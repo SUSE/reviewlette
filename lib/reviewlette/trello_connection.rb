@@ -23,32 +23,23 @@ module Reviewlette
     end
 
     def find_card(title)
-      re1='.*?'
-      re2='\\d+'
-      re3='.*?'
-      re4='(\\d+)'
-      re=(re1+re2+re3+re4)
+      re=('.*?'+'\\d+'+'.*?'+'(\\d+)')
       m=Regexp.new(re,Regexp::IGNORECASE)
       if m.match(title)
-        id=m.match(title)[1]
+        m.match(title)[1]
         puts "found card nr: #{id}"
-        @id = m.match(title)[1]
       else
         nil
       end
     end
 
     def determine_reviewer(card)
-      username = (team - card.assignees.map(&:username)).sample
-      find_member_by_username(username)
+      find_member_by_username((team - card.assignees.map(&:username)).sample)
     end
-
-
 
     def add_reviewer_to_card(reviewer, card)
       card.add_member(reviewer) if reviewer
     end
-
 
     def comment_on_card(reviewer, card)
       card.add_comment(reviewer) if reviewer
@@ -58,14 +49,9 @@ module Reviewlette
       card.move_to_list(column)
     end
 
-
     def team
       @team ||= NAMES.keys
     end
-
-
-
-    # private
 
     def find_column(column_name)
       @board.lists.find {|x| x.name == column_name}

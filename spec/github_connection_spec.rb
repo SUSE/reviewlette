@@ -1,6 +1,5 @@
 require 'spec_helper'
 
-
 describe Reviewlette::GithubConnection do
 
   subject { Reviewlette::GithubConnection }
@@ -55,15 +54,15 @@ describe Reviewlette::GithubConnection do
     let( :connection ) { subject.new }
 
     it 'comments on a given issue' do
-      params = [connection.repo, 4, 'name is your reviewer :thumbsup:']
-      params2 = [4, 'name']
+      params = [connection.repo, 4, '@name is your reviewer :thumbsup: check url']
+      params2 = [4, 'name', 'url']
       allow(connection.client).to receive(:add_comment).with(*params).and_return true
       expect(connection.comment_on_issue(*params2)).to eq true
     end
 
     it 'fails to comment on a given issue and fails' do
-      params = [connection.repo, 4, 'name is your reviewer :thumbsup:']
-      params2 = [4, 'name']
+      params = [connection.repo, 4, '@name is your reviewer :thumbsup: check url']
+      params2 = [4, 'name', 'url']
       allow(connection.client).to receive(:add_comment).with(*params).and_return false
       expect(connection.comment_on_issue(*params2)).to eq false
     end
@@ -72,29 +71,16 @@ describe Reviewlette::GithubConnection do
   describe '#list_issues' do
     let( :connection ) { subject.new }
 
-    it 'determine if an assignee is set ' do
-      #how to check @number e.g. to contain a hash
-    end
-
     it 'fails to determine if an assignee is set' do
       allow(connection.client).to receive_message_chain(:list_issues)
       connection.list_issues(connection.repo)
     end
   end
 
-  describe '#move_card_to_list' do
+  describe '#team' do
     let( :connection ) { subject.new }
-
-    it 'move cards to its certain column' do
-      card = double('card')
-      allow(card).to receive(:move_to_list).with('Done').and_return true
-      expect(connection.move_card_to_list(card, 'Done')).to be true
-    end
-
-    it 'fails to  move cards to its certain column' do
-      card = double('card')
-      allow(card).to receive(:move_to_list).with('Done').and_return false
-      expect(connection.move_card_to_list(card, 'Done')).to be false
+    it '#team' do
+      expect(connection.team).to be_a_kind_of Array
     end
   end
 end

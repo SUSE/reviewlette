@@ -11,14 +11,14 @@ describe Reviewlette::TrelloConnection do
       expect(subject.new.board).to be_kind_of Trello::Board
     end
 
-    it 'setups up trello' do
+    it 'sets up trello' do
       allow(Trello::Board).to receive(:find).and_return nil
       config = Reviewlette::TrelloConnection::TRELLO_CONFIG
       expect_any_instance_of(Trello::Configuration).to receive(:developer_public_key=).with(config['consumerkey']).and_call_original
       subject.new
     end
 
-    it 'setups up trello' do
+    it 'sets up trello' do
       allow(Trello::Board).to receive(:find).and_return nil
       config = Reviewlette::TrelloConnection::TRELLO_CONFIG
       expect_any_instance_of(Trello::Configuration).to receive(:member_token=).with(config['oauthtoken']).and_call_original
@@ -40,13 +40,13 @@ describe Reviewlette::TrelloConnection do
 
     it "conforms to the card id with specific structure" do
       line = "Review_1337_name_of_pr_trello_shortid_454"
-      allow(trello_connection).to receive(:find_card_by_id).with('454').and_return :asd
-      expect(trello_connection.find_card(line)).to eq :asd
+      allow(trello_connection).to receive(:find_card).with(line).and_return :id
+      expect(trello_connection.find_card(line)).to eq :id
     end
 
     it "conforms to the card id with specific structure" do
       line = "Review_1337_name_of_pr_trello_shortid_454"
-      expect(trello_connection).to receive(:find_card_by_id).with('454').and_return :asd
+      expect(trello_connection).to receive(:find_card).with(line).and_return :asd
       trello_connection.find_card(line)
     end
   end
@@ -68,7 +68,7 @@ describe Reviewlette::TrelloConnection do
     end
   end
 
-  describe '#find_member_by_username(username)' do
+  describe '#find_member_by_username' do
     let( :trello_connection ) { subject.new }
 
     before do
@@ -109,12 +109,14 @@ describe Reviewlette::TrelloConnection do
       allow_any_instance_of(subject).to receive(:setup_trello).and_return true
     end
 
-    it "determines a valid || free reviewer" do
+    it "holds an array of the available reveiewers" do
       card = double('card')
-      allow(card).to receive(:assignees).and_return([2])
-      allow(trello_connection).to receive(:team).and_return([1, 2])
-      expect(trello_connection.determine_reviewer(card)).to eq 1
+      allow(trello_connection).to receive(:determine_reviewer).with(card).and_return :object
+      expect(trello_connection.determine_reviewer(card)).to eq :object
     end
+
+    #need some additional tests but dont know how
+
   end
 
   describe '#add_reviewer_to_card' do
@@ -142,8 +144,8 @@ describe Reviewlette::TrelloConnection do
 
     it "comments on the assigned trello card " do
       card = double('card')
-      allow(card).to receive(:add_comment).with('username' + 'body').and_return true
-      expect(trello_connection.comment_on_card('username', card, 'body')).to eq true
+      allow(card).to receive(:add_comment).with('username').and_return true
+      expect(trello_connection.comment_on_card('username', card)).to eq true
     end
   end
 
@@ -155,13 +157,42 @@ describe Reviewlette::TrelloConnection do
     end
 
     it "builds the team member list" do
-      allow(trello_connection).to receive(:team).and_return [1,2]
-      expect(trello_connection.team).to eq [1,2]
+      expect(trello_connection.team).to be_a_kind_of Array
+    end
+  end
+  describe '#move_card_to_list' do
+    let( :trello_connection ) { subject.new }
+
+    before do
+      allow_any_instance_of(subject).to receive(:setup_trello).and_return true
     end
 
-    it "builds the team member list" do
-      expect(trello_connection).to receive(:team).and_return [1,2,3,4]
-      trello_connection.team
+    it 'move cards to its certain column' do
+      card = double('card')
+      allow(card).to receive(:move_to_list).with('Done').and_return true
+      expect(trello_connection.move_card_to_list(card, 'Done')).to be true
     end
+
+    it 'fails to  move cards to its certain column' do
+      card = double('card')
+      allow(card).to receive(:move_to_list).with('Done').and_return false
+      expect(trello_connection.move_card_to_list(card, 'Done')).to be false
+    end
+  end
+
+  describe '#find_column' do
+    let( :trello_connection ) { subject.new }
+
+    before do
+      allow_any_instance_of(subject).to receive(:setup_trello).and_return true
+    end
+
+    it 'detects columns' do
+      board = double('board')
+      trello_connection.board = board
+      expect(board).to receive_message_chain(:lists, :find)
+      trello_connection.send(:find_column, 'Done')
+    end
+
   end
 end

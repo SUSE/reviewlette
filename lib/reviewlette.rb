@@ -51,7 +51,7 @@ module Reviewlette
           end
 
           if @card
-            while !(@reviewer)
+            until @reviewer
               @reviewer = @trello_connection.determine_reviewer(@card)
             end
           end
@@ -76,8 +76,6 @@ module Reviewlette
           @full_comment = '@' + @trelloname + ' will review ' + 'https://github.com/'+ @repo+'/issues/'+@number.to_s
           @trello_connection.comment_on_card(@full_comment, @card) if @full_comment
 
-          #also search for closed issues and close/move cards
-          #move to done is currently not working
           if @github_connection.pull_merged?(@repo, @id)
             @column = @trello_connection.find_column('Done')
             @trello_connection.move_card_to_list(@card, @column)
@@ -92,5 +90,4 @@ module Reviewlette
     end
   end
 end
-
-Reviewlette.main
+# Reviewlette.main
