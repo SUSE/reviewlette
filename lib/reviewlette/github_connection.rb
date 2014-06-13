@@ -3,15 +3,17 @@ require 'yaml'
 require 'octokit'
 
 module Reviewlette
+
   class GithubConnection
+
     GITHUB_CONFIG = YAML.load_file('config/.github.yml')
     NAMES = YAML.load_file('config/.members.yml')
+    
     attr_accessor :client, :repo
 
     def initialize
       gh_connection
     end
-
 
     def gh_connection
       @repo = 'jschmid1/reviewlette'
@@ -37,6 +39,5 @@ module Reviewlette
     def team
       @team ||= NAMES.values
     end
-
   end
 end

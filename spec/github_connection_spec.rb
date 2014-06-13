@@ -15,8 +15,8 @@ describe Reviewlette::GithubConnection do
       expect(Octokit::Client).to receive(:new).with(:access_token => config['token'])
       subject.new
     end
-
   end
+
   describe '#pull_merged?' do
     let( :connection ) { subject.new }
 
@@ -30,7 +30,6 @@ describe Reviewlette::GithubConnection do
       expect(connection.pull_merged?('false', 5)).to be false
     end
   end
-
 
   describe '#add_assignee' do
     let( :connection ) { subject.new }
@@ -79,6 +78,7 @@ describe Reviewlette::GithubConnection do
 
   describe '#team' do
     let( :connection ) { subject.new }
+
     it '#team' do
       expect(connection.team).to be_a_kind_of Array
     end

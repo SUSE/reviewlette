@@ -85,7 +85,6 @@ describe Reviewlette::TrelloConnection do
   end
 
   describe '#find_member_by_id' do
-
     let( :trello_connection ) { subject.new }
 
     before do
@@ -102,7 +101,6 @@ describe Reviewlette::TrelloConnection do
   end
 
   describe '#determine_reviewer' do
-
     let ( :trello_connection ) { subject.new }
 
     before do
@@ -114,13 +112,10 @@ describe Reviewlette::TrelloConnection do
       allow(trello_connection).to receive(:determine_reviewer).with(card).and_return :object
       expect(trello_connection.determine_reviewer(card)).to eq :object
     end
-
     #need some additional tests but dont know how
-
   end
 
   describe '#add_reviewer_to_card' do
-
     let ( :trello_connection ) { subject.new }
 
     before do
@@ -135,7 +130,6 @@ describe Reviewlette::TrelloConnection do
   end
 
   describe '#comment_on_card' do
-
     let ( :trello_connection ) { subject.new }
 
     before do
@@ -160,6 +154,7 @@ describe Reviewlette::TrelloConnection do
       expect(trello_connection.team).to be_a_kind_of Array
     end
   end
+
   describe '#move_card_to_list' do
     let( :trello_connection ) { subject.new }
 
@@ -193,6 +188,5 @@ describe Reviewlette::TrelloConnection do
       expect(board).to receive_message_chain(:lists, :find)
       trello_connection.send(:find_column, 'Done')
     end
-
   end
 end

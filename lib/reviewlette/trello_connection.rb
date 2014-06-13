@@ -45,16 +45,11 @@ module Reviewlette
         users = (team - card.assignees.map(&:username)).sample
         find_member_by_username(users)
       end
-
-      #error case => if everyone is assigned to the card output will be []
-      # [].sample is nil which results in a never ending loop
     end
-
 
     def add_reviewer_to_card(reviewer, card)
       card.add_member(reviewer) if reviewer
     end
-
 
     def comment_on_card(reviewer, card)
       card.add_comment(reviewer) if reviewer
@@ -64,14 +59,9 @@ module Reviewlette
       card.move_to_list(column)
     end
 
-
     def team
       @team ||= NAMES.keys
     end
-
-
-
-    # private
 
     def find_column(column_name)
       @board.lists.find {|x| x.name == column_name}

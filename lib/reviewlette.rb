@@ -81,7 +81,6 @@ module Reviewlette
             @column = @trello_connection.find_column('In review')
             @trello_connection.move_card_to_list(@card, @column)
           end
-
         end
       end
       puts 'No more new issues to work with.'
