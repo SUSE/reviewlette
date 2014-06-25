@@ -7,7 +7,6 @@
 .github.yml
 *.yml
 .bundle
-.config
 coverage
 .swp
 InstalledFiles
@@ -20,7 +19,6 @@ test/version_tmp
 .secrets.yml
 .trellokey.yml
 tmp
-
 # YARD artifacts
 .yardoc
 _yardoc
