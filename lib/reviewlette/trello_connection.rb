@@ -14,8 +14,8 @@ module Reviewlette
 
   class TrelloConnection
 
-    TRELLO_CONFIG = YAML.load_file('config/.trello.yml')
-    NAMES = YAML.load_file('config/.members.yml')
+    TRELLO_CONFIG = YAML.load_file('../config/.trello.yml')
+    NAMES = YAML.load_file('../config/.members.yml')
     attr_accessor :board
 
     def initialize
