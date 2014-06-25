@@ -1,5 +1,5 @@
 require 'simplecov'
-SimpleCov.minimum_coverage 70
+SimpleCov.minimum_coverage 60
 SimpleCov.start do
   add_filter '/spec/'
   add_filter 'vendor'
