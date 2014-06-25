@@ -8,7 +8,7 @@ module Reviewlette
 
     GITHUB_CONFIG = YAML.load_file('config/.github.yml')
     NAMES = YAML.load_file('config/.members.yml')
-    
+
     attr_accessor :client, :repo
 
     def initialize

@@ -1,5 +1,0 @@
-#!/usr/bin/ruby
-
-require 'reviewlette'
-
-Reviewlette.spin

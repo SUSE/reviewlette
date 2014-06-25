@@ -8,6 +8,7 @@ Gem::Specification.new do |s|
   s.email = 'jschmid@suse.de'
   s.files = ['lib/reviewlette.rb', 'lib/reviewlette/github_connection.rb', 'lib/reviewlette/trello_connection.rb']
   s.homepage = 'https://rubyges.rog/gems/reviewlette'
+  s.post_install_message = 'sup'
   s.executables = ["reviewlette"]
   s.license = 'MIT'
 end
