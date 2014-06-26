@@ -13,14 +13,14 @@ describe Reviewlette::TrelloConnection do
 
     it 'sets up trello' do
       allow(Trello::Board).to receive(:find).and_return nil
-      config = Reviewlette::TrelloConnection::TRELLO_CONFIG
+      config = Reviewlette::TRELLO_CONFIG1
       expect_any_instance_of(Trello::Configuration).to receive(:developer_public_key=).with(config['consumerkey']).and_call_original
       subject.new
     end
 
     it 'sets up trello' do
       allow(Trello::Board).to receive(:find).and_return nil
-      config = Reviewlette::TrelloConnection::TRELLO_CONFIG
+      config = Reviewlette::TRELLO_CONFIG1
       expect_any_instance_of(Trello::Configuration).to receive(:member_token=).with(config['oauthtoken']).and_call_original
       subject.new
     end
