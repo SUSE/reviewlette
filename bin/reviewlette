@@ -1,6 +1,7 @@
 #!/usr/bin/ruby
 
-require '../lib/reviewlette'
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
+require 'reviewlette'
 
 Reviewlette.spin
 

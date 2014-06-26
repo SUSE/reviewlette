@@ -6,8 +6,8 @@ module Reviewlette
 
   class GithubConnection
 
-    GITHUB_CONFIG = YAML.load_file('../config/.github.yml')
-    NAMES = YAML.load_file('../config/.members.yml')
+    GITHUB_CONFIG = YAML.load_file("#{File.dirname(__FILE__)}/../../config/.github.yml")
+
 
     attr_accessor :client, :repo
 

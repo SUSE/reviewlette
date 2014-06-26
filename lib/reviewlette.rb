@@ -1,11 +1,11 @@
-$:.unshift(File.expand_path(File.dirname(__FILE__))) unless
-$:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 require 'reviewlette/trello_connection'
 require 'reviewlette/github_connection'
 require 'yaml'
 require 'octokit'
 require 'trello'
 require 'debugger'
+
+
 
 class Trello::Card
 
@@ -18,16 +18,17 @@ end
 
 module Reviewlette
 
-  attr_accessor :trello_connection, :github_connection
+  attr_accessor :trello_connection, :github_connection, :repo, :board
+
+  NAMES = YAML.load_file("#{File.dirname(__FILE__)}/../config/.members.yml") # NAMES = YAML.load_file('../config/.members.yml') works with the actual programm config/.members.yml in all files works for rspec ??
+  TRELLO_CONFIG1 = YAML.load_file("#{File.dirname(__FILE__)}/../config/.trello.yml")
 
   class << self
-
-    NAMES = YAML.load_file('../config/.members.yml')
-    TRELLO_CONFIG1 = YAML.load_file('../config/.trello.yml')
 
 
     def spin
       setup
+      debugger
       @github_connection.list_issues(@repo).each do |a|
         unless a[:assignee]
           @number = a[:number]
@@ -45,7 +46,7 @@ module Reviewlette
           @reviewer = nil
         end
       end
-      abort 'No new issues.'
+      puts 'No new issues.'
     end
 
     def setup
@@ -55,12 +56,11 @@ module Reviewlette
       @repo = 'jschmid1/reviewlette'
     end
 
-
     def find_id
       if @id
         @card = @trello_connection.find_card_by_id(@id)
       else
-        abort "id not found"
+        puts "id not found"
       end
     end
 
@@ -69,7 +69,6 @@ module Reviewlette
         @reviewer = @trello_connection.determine_reviewer(@card)
       end
       @trelloname = @reviewer.username
-      puts "Chose: #{@reviewer.username}"
     end
 
     def transform_name

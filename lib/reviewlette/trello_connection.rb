@@ -5,7 +5,7 @@ require 'trello'
 class Trello::Card
 
   def assignees
-    @trello_connection = Reviewlette::TrelloConnection.new
+    @trello_connection = ::Reviewlette::TrelloConnection.new
     member_ids.map{|id| @trello_connection.find_member_by_id(id)}
   end
 end
@@ -14,8 +14,6 @@ module Reviewlette
 
   class TrelloConnection
 
-    TRELLO_CONFIG = YAML.load_file('../config/.trello.yml')
-    NAMES = YAML.load_file('../config/.members.yml')
     attr_accessor :board
 
     def initialize
@@ -81,10 +79,10 @@ module Reviewlette
 
     def setup_trello
       Trello.configure do |config|
-        config.developer_public_key = TRELLO_CONFIG['consumerkey']
-        config.member_token = TRELLO_CONFIG['oauthtoken']
+        config.developer_public_key = ::Reviewlette::TRELLO_CONFIG1['consumerkey']
+        config.member_token = ::Reviewlette::TRELLO_CONFIG1['oauthtoken']
       end
-      @board = Trello::Board.find(TRELLO_CONFIG['board_id'])
+      @board = Trello::Board.find(::Reviewlette::TRELLO_CONFIG1['board_id'])
     end
   end
 end
