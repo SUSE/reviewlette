@@ -14,6 +14,9 @@ GEM
     ap (0.1.1)
       httparty (>= 0.7.7)
     builder (3.2.2)
+    byebug (3.1.2)
+      columnize (~> 0.8)
+      debugger-linecache (~> 1.2)
     columnize (0.8.9)
     crack (0.4.2)
       safe_yaml (~> 1.0.0)
@@ -90,6 +93,7 @@ PLATFORMS
 
 DEPENDENCIES
   ap
+  byebug
   debugger
   haml
   json
