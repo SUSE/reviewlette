@@ -2,6 +2,7 @@ Reviewlette
 ===========
 
 [![Coverage Status](https://img.shields.io/coveralls/jschmid1/reviewlette.svg)](https://coveralls.io/r/jschmid1/reviewlette)
+[![Code Climate](https://codeclimate.com/github/jschmid1/reviewlette.png)](https://codeclimate.com/github/jschmid1/reviewlette)
 
 Tool to automatically assign a "Reviewer" to a GitHub Issue and to the attached Trello Card.
 
