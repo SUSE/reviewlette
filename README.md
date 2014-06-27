@@ -29,11 +29,14 @@ Fill `config/.trello.yml` with your *consumerkey*, *consumersecret*, *oauthtoken
 -consumersecret: theconsumersecret11
 -oauthtoken: theoauthtoken11
 ```
+
 [Which can be generated here](https://trello.com/1/appKey/generate)
+
 Fill `config/.github.yml` with your *token* 
 ```yml
 -token: thetokenfromgithub
 ```
+
 [Which can be generated here](https://github.com/settings/applications/new)
 
 
