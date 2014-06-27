@@ -20,7 +20,7 @@ module Reviewlette
 
   attr_accessor :trello_connection, :github_connection, :repo, :board
 
-  NAMES = YAML.load_file("#{File.dirname(__FILE__)}/../config/.members.yml") # NAMES = YAML.load_file('../config/.members.yml') works with the actual programm config/.members.yml in all files works for rspec ??
+  NAMES = YAML.load_file("#{File.dirname(__FILE__)}/../config/.members.yml")
   TRELLO_CONFIG1 = YAML.load_file("#{File.dirname(__FILE__)}/../config/.trello.yml")
 
   class << self
@@ -28,25 +28,28 @@ module Reviewlette
 
     def spin
       setup
-      debugger
-      @github_connection.list_issues(@repo).each do |a|
-        unless a[:assignee]
-          @number = a[:number]
-          @title = a[:title]
-          @body = a[:body]
-          @id = @trello_connection.find_card(@title.to_s)
-          find_id
-          set_reviewer
-          transform_name
-          add_reviewer_on_github
-          comment_on_github
-          add_to_trello_card
-          comment_on_trello
-          move_to_list
-          @reviewer = nil
-        end
+
+      get_unassigned_github_issues.each do |a|
+        @number = a[:number]
+        @title = a[:title]
+        @body = a[:body]
+        @id = @trello_connection.find_card(@title.to_s)
+        find_id
+        set_reviewer
+        transform_name
+        add_reviewer_on_github
+        comment_on_github
+        add_to_trello_card
+        comment_on_trello
+        move_to_list
+        @reviewer = nil
       end
-      puts 'No new issues.'
+
+      puts 'No new issues.' unless @issues.present?
+    end
+
+    def get_unassigned_github_issues
+      @issues = @github_connection.list_issues(@repo).select{|issue| !issue[:assignee]}
     end
 
     def setup
