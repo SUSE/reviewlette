@@ -13,4 +13,4 @@ gem 'debugger'
 gem 'byebug'
 gem 'simplecov'
 gem 'prophet'
-gem 'coveralls', require: false
+gem 'coveralls'
