@@ -18,6 +18,9 @@ What it does:
 
 ## Setup
 
+#### Name your pullrequest like so:
+#### Review_#23_name_of_review_42  <= trello card number
+
 Fill `config/.members.yml` with the *trellonames* as key and the *githubname* as value.
 ```yml
 -trelloname: 'githubame'
