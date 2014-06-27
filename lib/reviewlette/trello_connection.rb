@@ -37,12 +37,16 @@ module Reviewlette
     end
 
     def determine_reviewer(card)
-      if (team - card.assignees.map(&:username)).count <= 0
-        raise "Everyone on the team is assigned to the Card."
-      else
-        users = (team - card.assignees.map(&:username)).sample
-        find_member_by_username(users)
-      end
+      raise "Everyone on the team is assigned to the Card." if reviewer_exception_handler(card)
+      find_member_by_username(sample_reviewer(card))
+    end
+
+    def sample_reviewer(card)
+      (team - card.assignees.map(&:username)).sample
+    end
+
+    def reviewer_exception_handler(card)
+      (team - card.assignees.map(&:username)).count <= 0
     end
 
     def add_reviewer_to_card(reviewer, card)

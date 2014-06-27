@@ -40,8 +40,8 @@ describe Reviewlette::TrelloConnection do
 
     it "conforms to the card id with specific structure" do
       line = "Review_1337_name_of_pr_trello_shortid_454"
-      allow(trello_connection).to receive(:find_card).with(line).and_return :id
-      expect(trello_connection.find_card(line)).to eq :id
+      allow(trello_connection).to receive(:find_card).with(line).and_return 454
+      expect(trello_connection.find_card(line)).to eq 454
     end
 
     it "conforms to the card id with specific structure" do
@@ -98,21 +98,6 @@ describe Reviewlette::TrelloConnection do
       expect(board).to receive_message_chain(:members, :find)
       trello_connection.send(:find_member_by_id, 42)
     end
-  end
-
-  describe '#determine_reviewer' do
-    let ( :trello_connection ) { subject.new }
-
-    before do
-      allow_any_instance_of(subject).to receive(:setup_trello).and_return true
-    end
-
-    it "holds an array of the available reveiewers" do
-      card = double('card')
-      allow(trello_connection).to receive(:determine_reviewer).with(card).and_return :object
-      expect(trello_connection.determine_reviewer(card)).to eq :object
-    end
-    #need some additional tests but dont know how
   end
 
   describe '#add_reviewer_to_card' do
@@ -187,6 +172,49 @@ describe Reviewlette::TrelloConnection do
       trello_connection.board = board
       expect(board).to receive_message_chain(:lists, :find)
       trello_connection.send(:find_column, 'Done')
+    end
+  end
+
+  describe '#sample_reviewer' do
+    let ( :trello_connection ) { subject.new }
+
+    before do
+      allow_any_instance_of(subject).to receive(:setup_trello).and_return true
+    end
+    it 'randomly selects a teammember' do
+      card = double('card')
+      expect(card).to receive_message_chain(:assignees, :map).and_return ['funny','names']
+      trello_connection.sample_reviewer(card)
+    end
+  end
+
+  describe '#reviewer_exception_handler' do
+    let ( :trello_connection ) { subject.new }
+
+    before do
+      allow_any_instance_of(subject).to receive(:setup_trello).and_return true
+    end
+    it 'checks sum of for card assignees' do
+      card = double('card')
+      expect(card).to receive_message_chain(:assignees, :map).and_return [1,2,3]
+      trello_connection.reviewer_exception_handler(card)
+    end
+  end
+
+  describe '#determine_reviewer' do
+    let ( :trello_connection ) { subject.new }
+
+    before do
+      allow_any_instance_of(subject).to receive(:setup_trello).and_return true
+      allow_any_instance_of(subject).to receive(:reviewer_exception_handler).and_return true
+    end
+
+    it 'holds an array of the available reveiewers' do
+      # card = double('card')
+      # expect(trello_connection.determine_reviewer(card)).to receive(trello_connection.reviewer_exception_handler(card)).to raise_error(RuntimeError, 'asd')
+      # expect(trello_connection).to receive(:determine_reviewer).with(card).and_return false
+      # trello_connection.determine_reviewer(card)
+      #additional tests needed
     end
   end
 end

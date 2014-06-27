@@ -15,7 +15,6 @@ class Trello::Card
   end
 end
 
-
 module Reviewlette
 
   attr_accessor :trello_connection, :github_connection, :repo, :board
@@ -25,10 +24,8 @@ module Reviewlette
 
   class << self
 
-
     def spin
       setup
-
       get_unassigned_github_issues.each do |a|
         @number = a[:number]
         @title = a[:title]
@@ -44,7 +41,6 @@ module Reviewlette
         move_to_list
         @reviewer = nil
       end
-
       puts 'No new issues.' unless @issues.present?
     end
 

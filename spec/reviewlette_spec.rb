@@ -130,14 +130,9 @@ describe Reviewlette do
     end
 
     it 'rescues with: already assigned' do
-      # instance_variable! :trello_connection
-      # Reviewlette.instance_variable_set("@reviewer", nil)
-      # Reviewlette.instance_variable_set("@card", nil)
-      # expect(trello_connection).to receive(:add_reviewer_to_card).with(nil, nil).to raise_error 'already assigned'
-      # expect(Reviewlette.add_to_trello_card).to raise_error 'already '
+      instance_variable! :trello_connection
+      expect{Reviewlette.add_to_trello_card}.to raise_exception
       # Reviewlette.add_to_trello_card
-      #EXCEPTOINHANDLING ??
-      expect{raise 'already assigned'}.to raise_error 'already assigned'
     end
   end
 
