@@ -8,7 +8,6 @@ module Reviewlette
 
     GITHUB_CONFIG = YAML.load_file("#{File.dirname(__FILE__)}/../../config/.github.yml")
 
-
     attr_accessor :client, :repo
 
     def initialize
@@ -16,7 +15,7 @@ module Reviewlette
     end
 
     def gh_connection
-      @repo = 'jschmid1/reviewlette'
+      @repo = GITHUB_CONFIG['repo']
       @client = Octokit::Client.new(:access_token => GITHUB_CONFIG['token'])
     end
 
