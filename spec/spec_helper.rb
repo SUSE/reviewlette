@@ -4,10 +4,11 @@ require 'coveralls'
 Coveralls.wear!
 
 require 'simplecov'
-SimpleCov.minimum_coverage 90 
+SimpleCov.minimum_coverage 90
+SimpleCov.formatter = SimpleCov::Formatter::HTMLFormatter
 SimpleCov.start do
   add_filter '/spec/'
-  add_filter 'vendor'
+  #add_filter 'vendor'
 end
 
 require 'webmock/rspec'

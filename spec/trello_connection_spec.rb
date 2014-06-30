@@ -40,14 +40,7 @@ describe Reviewlette::TrelloConnection do
 
     it "conforms to the card id with specific structure" do
       line = "Review_1337_name_of_pr_trello_shortid_454"
-      allow(trello_connection).to receive(:find_card).with(line).and_return 454
-      expect(trello_connection.find_card(line)).to eq 454
-    end
-
-    it "conforms to the card id with specific structure" do
-      line = "Review_1337_name_of_pr_trello_shortid_454"
-      expect(trello_connection).to receive(:find_card).with(line).and_return :asd
-      trello_connection.find_card(line)
+      expect(trello_connection.find_card(line)).to eql '454'
     end
   end
 
@@ -206,15 +199,20 @@ describe Reviewlette::TrelloConnection do
 
     before do
       allow_any_instance_of(subject).to receive(:setup_trello).and_return true
-      allow_any_instance_of(subject).to receive(:reviewer_exception_handler).and_return true
+    end
+
+    it 'fails to holds an array of the available reveiewers' do
+      card = double('card')
+      expect(trello_connection).to receive(:reviewer_exception_handler).with(card).and_return true
+      expect{trello_connection.determine_reviewer(card)}.to raise_error(RuntimeError, 'Everyone on the team is assigned to the Card.')
     end
 
     it 'holds an array of the available reveiewers' do
-      # card = double('card')
-      # expect(trello_connection.determine_reviewer(card)).to receive(trello_connection.reviewer_exception_handler(card)).to raise_error(RuntimeError, 'asd')
-      # expect(trello_connection).to receive(:determine_reviewer).with(card).and_return false
-      # trello_connection.determine_reviewer(card)
-      #additional tests needed
+      card = double('card')
+      expect(trello_connection).to receive(:reviewer_exception_handler).with(card).and_return false
+      expect(trello_connection).to receive(:sample_reviewer).and_return true
+      expect(trello_connection).to receive(:find_member_by_username).and_return true
+      expect(trello_connection.determine_reviewer(card)).to eq true
     end
   end
 end
