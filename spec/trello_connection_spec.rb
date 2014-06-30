@@ -211,8 +211,8 @@ describe Reviewlette::TrelloConnection do
       card = double('card')
       expect(trello_connection).to receive(:reviewer_exception_handler).with(card).and_return false
       expect(trello_connection).to receive(:sample_reviewer).and_return true
-      expect(trello_connection).to receive(:find_member_by_username).and_return true
-      expect(trello_connection.determine_reviewer(card)).to eq true
+      expect(trello_connection).to receive(:find_member_by_username).and_return 'name'
+      expect(trello_connection.determine_reviewer(card)).to eq 'name'
     end
   end
 end
