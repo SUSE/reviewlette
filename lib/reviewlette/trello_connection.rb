@@ -1,6 +1,8 @@
 require 'yaml'
 require 'debugger'
 require 'trello'
+require 'logger'
+require_relative 'exceptions'
 
 class Trello::Card
 
@@ -37,7 +39,7 @@ module Reviewlette
     end
 
     def determine_reviewer(card)
-      raise "Everyone on the team is assigned to the Card." if reviewer_exception_handler(card)
+      raise AlreadyAssignedException, "Everyone on the team is assigned to the Card." if reviewer_exception_handler(card) #catch
       find_member_by_username(sample_reviewer(card))
     end
 
