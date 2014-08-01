@@ -39,10 +39,14 @@ module Reviewlette
           move_to_list
           @reviewer = nil
         else
-          @trello_connection.comment_on_card("Skipped Issue #{@card.short_id} because everyone on the team is assigned to the card", @card)
+          comment_on_error
         end
       end
       puts 'No new issues.' unless @issues.present?
+    end
+
+    def comment_on_error
+      @trello_connection.comment_on_card("Skipped Issue #{@number} because everyone on the team is assigned to the card", @card)
     end
 
     def get_unassigned_github_issues
