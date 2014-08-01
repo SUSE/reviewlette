@@ -1,4 +1,3 @@
-require 'debugger'
 require 'yaml'
 require 'octokit'
 

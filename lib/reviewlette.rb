@@ -3,9 +3,6 @@ require 'reviewlette/github_connection'
 require 'yaml'
 require 'octokit'
 require 'trello'
-require 'debugger'
-
-
 
 class Trello::Card
 
@@ -52,7 +49,7 @@ module Reviewlette
       @github_connection = Reviewlette::GithubConnection.new
       @trello_connection = Reviewlette::TrelloConnection.new
       @board = Trello::Board.find(TRELLO_CONFIG1['board_id'])
-      @repo = 'jschmid1/reviewlette'
+      @repo = Reviewlette::GithubConnection::GITHUB_CONFIG['repo']
     end
 
     def find_id
@@ -64,10 +61,11 @@ module Reviewlette
     end
 
     def set_reviewer
-      while !(@reviewer)
+      while !(@reviewer) # until
         @reviewer = @trello_connection.determine_reviewer(@card)
       end
       @trelloname = @reviewer.username
+      puts "Selected #{@reviewer.username}"
     end
 
     def transform_name
@@ -83,11 +81,9 @@ module Reviewlette
     end
 
     def add_to_trello_card
-      begin
-        @trello_connection.add_reviewer_to_card(@reviewer, @card)
-      rescue
-        puts 'already assigned'
-      end
+      @trello_connection.add_reviewer_to_card(@reviewer, @card)
+    rescue AlreadyAssignedException => e
+      puts e.message
     end
 
     def comment_on_trello
