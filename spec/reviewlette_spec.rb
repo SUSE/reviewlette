@@ -92,6 +92,7 @@ describe Reviewlette do
       instance_variable! :card
       expect(trello_connection).to receive(:determine_reviewer).with(card).and_return reviewer
       expect(reviewer).to receive(:username).and_return String
+      expect(reviewer).to receive(:username).and_return String
       Reviewlette.set_reviewer
     end
   end
