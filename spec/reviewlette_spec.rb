@@ -35,20 +35,30 @@ describe Reviewlette do
       expect(Reviewlette).to receive(:setup)
       expect(Reviewlette).to receive(:find_id)
       expect(Reviewlette).to receive(:set_reviewer)
-      expect(Reviewlette).to receive(:transform_name)
-      expect(Reviewlette).to receive(:add_reviewer_on_github)
-      expect(Reviewlette).to receive(:comment_on_github)
-      expect(Reviewlette).to receive(:add_to_trello_card)
-      expect(Reviewlette).to receive(:comment_on_trello)
-      expect(Reviewlette).to receive(:move_to_list)
+      expect(Reviewlette).to_not receive(:transform_name)
+      expect(Reviewlette).to_not receive(:add_reviewer_on_github)
+      expect(Reviewlette).to_not receive(:comment_on_github)
+      expect(Reviewlette).to_not receive(:add_to_trello_card)
+      expect(Reviewlette).to_not receive(:comment_on_trello)
+      expect(Reviewlette).to_not receive(:move_to_list)
+      expect(Reviewlette).to receive(:comment_on_error)
     end
 
     it 'runs' do
-      issue = { number: 1, title: 'Title', body: 'Body'}
+      issue = { number: 1, title: 'Title', body: 'Body' }
       expect(Reviewlette).to receive(:get_unassigned_github_issues).and_return [issue]
       expect(trello_connection).to receive(:find_card).with('Title').and_return true
       Reviewlette.spin
     end
+  end
+
+  describe '.comment_on_error' do
+    it 'posts a comment with the arror message on trello' do
+      instance_variable! :trello_connection
+      expect(trello_connection).to receive(:comment_on_card).with('Skipped Issue 1 because everyone on the team is assigned to the card', nil)
+      Reviewlette.comment_on_error
+    end
+
   end
 
   describe '.get_unassigned_github_issues' do

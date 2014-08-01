@@ -204,7 +204,7 @@ describe Reviewlette::TrelloConnection do
     it 'fails to holds an array of the available reveiewers' do
       card = double('card')
       expect(trello_connection).to receive(:reviewer_exception_handler).with(card).and_return true
-      expect{trello_connection.determine_reviewer(card)}.to raise_error(RuntimeError, 'Everyone on the team is assigned to the Card.')
+      expect{trello_connection.determine_reviewer(card)}.to raise_error(Exception, 'Everyone on the team is assigned to the Card.')
     end
 
     it 'holds an array of the available reveiewers' do
