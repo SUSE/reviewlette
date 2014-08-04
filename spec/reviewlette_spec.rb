@@ -22,7 +22,7 @@ describe Reviewlette do
   let(:reviewer) {double 'reviewer'}
   let(:github_connection) { double 'github_connection' }
   let(:full_comment) { @full_comment = "@#{trelloname} will review https://github.com/#{repo}/issues/#{number.to_s}" }
-
+  let(:exp) { AlreadyAssignedException }
 
   describe '.spin' do
     before do
@@ -104,7 +104,6 @@ describe Reviewlette do
       expect(trello_connection).to receive(:comment_on_card).with("Skipped Issue 1 because everyone on the team is assigned to the card", nil)
       Reviewlette.comment_on_error
     end
-
   end
 
   describe '.get_unassigned_github_issues' do
@@ -144,7 +143,13 @@ describe Reviewlette do
   end
 
   describe '.set_reviewer' do
+
+    before do
+      Reviewlette.instance_variable_set("@reviewer", nil)
+    end
+
     it 'sets the reviewer' do
+      reviewer = double('reviewer')
       instance_variable! :trello_connection
       instance_variable! :card
       expect(trello_connection).to receive(:determine_reviewer).with(card).and_return reviewer
@@ -154,9 +159,15 @@ describe Reviewlette do
     end
 
     it 'fails to set the reviewer because everyone on the team is assigned to the card' do
+      reviewer = double('reviewer')
       instance_variable! :trello_connection
       instance_variable! :card
-      expect { Reviewlette.set_reviewer }.to raise_error
+      Reviewlette.instance_variable_set("@logger", logger)
+      expect(trello_connection).to receive(:determine_reviewer).with(card).and_raise(Reviewlette::AlreadyAssignedException)
+      allow(card).to receive(:short_id).and_return 3
+      expect($stdout).to receive(:puts)
+      expect(logger).to receive(:warn)
+      expect(Reviewlette.set_reviewer).to eq false
     end
   end
 

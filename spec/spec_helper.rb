@@ -13,6 +13,7 @@ end
 
 require 'webmock/rspec'
 require 'rspec'
+require_relative '../lib/reviewlette/exceptions'
 require 'reviewlette'
 require 'support/request_stubbing'
 require 'debugger'
