@@ -22,37 +22,54 @@ module Reviewlette
   class << self
 
 
+    # Execute logic.
     def spin
       setup
       get_unassigned_github_issues.each do |a|
         @number = a[:number]
         @title = a[:title]
         @body = a[:body]
-        @id = @trello_connection.find_card(@title.to_s)
-        find_id
-        if set_reviewer
-          transform_name
-          add_reviewer_on_github
-          comment_on_github
-          add_to_trello_card
-          comment_on_trello
-          move_to_list
-          @reviewer = nil
-        else
-          comment_on_error
+        find_card(@title.to_s)
+        if find_id
+          if set_reviewer
+            transform_name
+            add_reviewer_on_github
+            comment_on_github
+            add_to_trello_card
+            comment_on_trello
+            move_to_list
+            @reviewer = nil
+          else
+            comment_on_error
+          end
         end
+        puts 'No new issues.' unless @issues.present?
       end
-      puts 'No new issues.' unless @issues.present?
     end
 
+    # Finds card based on title of Github Issue
+    def find_card(title)
+      begin
+        @id = title.split('_').last.to_i
+        raise NoTrelloCardException, "Could not find a Trello card, found #{title.split('_').last} instead" if @id == 0
+        true
+      rescue NoTrelloCardException => e
+        puts (e.message)
+        false
+      end
+    end
+
+    # TODO: Generic Error message.
     def comment_on_error
       @trello_connection.comment_on_card("Skipped Issue #{@number} because everyone on the team is assigned to the card", @card)
     end
 
+    # Gets [Array(String, String)] all GitHub Issues that are not assigned to someone.
     def get_unassigned_github_issues
       @issues = @github_connection.list_issues(@repo).select{|issue| !issue[:assignee]}
     end
 
+    # Sets instance variables.
     def setup
       @logger = Logger.new('review.log')
       @github_connection = Reviewlette::GithubConnection.new
@@ -61,19 +78,23 @@ module Reviewlette
       @repo = Reviewlette::GithubConnection::GITHUB_CONFIG['repo']
     end
 
-    # find_card_by_id returns TrelloCard instance
+    # Finds a sets card.
     def find_id
-      if @id
+      if @id != 0
         @card = @trello_connection.find_card_by_id(@id)
+        true
       else
-        puts "id not found"
+        puts "Id not found, skipping.."
+        @logger.warn("Id not found, skipping.. for Issue #{@title} with number #{@number}")
+        false
       end
     end
 
+    # Selects and sets reviewer.
     def set_reviewer
       begin
-        while !(@reviewer) # until
-          @reviewer = @trello_connection.determine_reviewer(@card)
+        while !(@reviewer)
+          @reviewer = @trello_connection.determine_reviewer(@card) if @card
         end
         @trelloname = @reviewer.username
         puts "Selected #{@reviewer.username}"
@@ -85,28 +106,32 @@ module Reviewlette
       end
     end
 
+    # Get Trelloname from configfile.
     def transform_name
       @githubname = NAMES[@trelloname]
     end
 
+    # Adds Assignee on GitHub.
     def add_reviewer_on_github
       @github_connection.add_assignee(@number, @title, @body, @githubname) if @number && @githubname
     end
 
+    # Comments on GitHub.
     def comment_on_github
       @github_connection.comment_on_issue(@number, @githubname, @card.url) if @number && @githubname
     end
-
+    # Adds Reviewer on Trello Card.
     def add_to_trello_card
       @trello_connection.add_reviewer_to_card(@reviewer, @card)
-
     end
 
+    # Comments on Trello Card.
     def comment_on_trello
       @full_comment = '@' + @trelloname + ' will review ' + 'https://github.com/'+ @repo+'/issues/'+@number.to_s
       @trello_connection.comment_on_card(@full_comment, @card) if @full_comment
     end
 
+    # TODO: More generic 'Done' and 'in Review' are not present everywhere
     def move_to_list
       if @github_connection.pull_merged?(@repo, @id)
         @column = @trello_connection.find_column('Done')

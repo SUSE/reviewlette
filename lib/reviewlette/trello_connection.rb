@@ -22,24 +22,8 @@ module Reviewlette
       setup_trello
     end
 
-    def find_card(title)
-      re1='.*?'
-      re2='\\d+'
-      re3='.*?'
-      re4='(\\d+)'
-      re=(re1+re2+re3+re4)
-      m=Regexp.new(re,Regexp::IGNORECASE)
-      if m.match(title)
-        id=m.match(title)[1]
-        puts "Found card : #{id}"
-        @id = m.match(title)[1]
-      else
-        nil
-      end
-    end
-
     def determine_reviewer(card)
-      raise AlreadyAssignedException, "Everyone on the team is assigned to the Card." if reviewer_exception_handler(card) #catch
+      raise AlreadyAssignedException, "Everyone on the team is assigned to the Card." if reviewer_exception_handler(card)
       find_member_by_username(sample_reviewer(card))
     end
 
