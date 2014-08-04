@@ -27,22 +27,6 @@ describe Reviewlette::TrelloConnection do
 
   end
 
-  describe '#find_card' do
-    let( :trello_connection ) { subject.new }
-
-    before do
-      allow_any_instance_of(subject).to receive(:setup_trello).and_return true
-    end
-
-    it "conforms to the card id with specific structure" do
-      expect(trello_connection.find_card("asd")).to be nil
-    end
-
-    it "conforms to the card id with specific structure" do
-      line = "Review_1337_name_of_pr_trello_shortid_454"
-      expect(trello_connection.find_card(line)).to eql '454'
-    end
-  end
 
   describe '#find_member_by_id(id)' do
     let( :trello_connection ) { subject.new }
