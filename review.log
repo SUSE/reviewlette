@@ -1,0 +1,6 @@
+# Logfile created on 2014-08-05 12:33:19 +0200 by logger.rb/41954
+W, [2014-08-05T12:41:05.955126 #17393]  WARN -- : Id not found, skipping.. for Issue add newline at end with number 14
+W, [2014-08-05T12:41:05.955546 #17393]  WARN -- : Id not found, skipping.. for Issue live testing with number 13
+W, [2014-08-05T12:43:32.302856 #17472]  WARN -- : Id not found, skipping.. for Issue add newline at end with number 14
+W, [2014-08-05T12:43:32.303236 #17472]  WARN -- : Id not found, skipping.. for Issue live testing with number 13
+W, [2014-08-05T12:43:32.303513 #17472]  WARN -- : Id not found, skipping.. for Issue review_12312313_nameofthereview_error_call with number 12
