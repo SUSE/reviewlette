@@ -51,7 +51,7 @@ module Reviewlette
     def find_card(title)
       begin
         @id = title.split('_').last.to_i
-        raise NoTrelloCardException, "Could not find a Trello card, found #{title.split('_').last} instead" if @id == 0
+        raise NoTrelloCardException, "Could not find a Trello card. Found #{title.split('_').last} instead, maybe the naming of your pullrequest is wrong?" if @id == 0
         true
       rescue NoTrelloCardException => e
         puts (e.message)
@@ -84,7 +84,6 @@ module Reviewlette
         @card = @trello_connection.find_card_by_id(@id)
         true
       else
-        puts "Id not found, skipping.."
         @logger.warn("Id not found, skipping.. for Issue #{@title} with number #{@number}")
         false
       end
