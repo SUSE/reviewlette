@@ -1,0 +1,11 @@
+
+W, [2014-08-01T14:56:29.535332 #30058]  WARN -- : Skipped Issue 33 because Everyone on the team is assigned to the Card.
+W, [2014-08-01T14:56:30.454207 #30058]  WARN -- : Skipped Issue 17 because Everyone on the team is assigned to the Card.
+W, [2014-08-01T15:00:49.519748 #30272]  WARN -- : Skipped Issue 33 because Everyone on the team is assigned to the Card.
+W, [2014-08-04T10:33:28.457167 #5978]  WARN -- : Skipped Issue 33 because Everyone on the team is assigned to the Card.
+W, [2014-08-04T12:00:06.188552 #7921]  WARN -- : Skipped Issue 33 because Everyone on the team is assigned to the Card.
+W, [2014-08-04T12:02:33.151107 #8000]  WARN -- : Skipped Issue 33 because Everyone on the team is assigned to the Card.
+W, [2014-08-04T12:11:08.127768 #8258]  WARN -- : Id not found, skipping..
+W, [2014-08-04T12:13:53.872086 #8319]  WARN -- : Id not found, skipping.. for PR: review_12312313_nameofthereview_error_call with number 12
+W, [2014-08-04T18:09:19.737049 #17299]  WARN -- : Id not found, skipping.. for Issue review_12312313_nameofthereview_error_call with number 12
+W, [2014-08-04T18:14:35.594307 #17415]  WARN -- : Id not found, skipping.. for Issue review_12312313_nameofthereview_error_call with number 12
