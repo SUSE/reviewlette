@@ -83,18 +83,34 @@ describe Reviewlette do
   describe '#find_card' do
 
     it 'finds the card by Github title' do
-      expect(Reviewlette).to receive(:find_card)
-      Reviewlette.find_card
-    end
-
-    it 'finds the card by Github title' do
       line = 'Review_1337_name_of_pr_trello_shortid_454'
-      expect(Reviewlette.find_card(line)).to eq true
+      pulls = { number: 1 }
+      expect(Reviewlette).to receive(:match_pr_id_with_issue_id).and_return [pulls]
+      allow(Reviewlette.find_card(line)).to receive(:match_pr_id_with_issue_id).and_return Array
     end
+    #
+    # it 'finds the card by Github branch' do
+    #   line = 'Review_1337_name_of_pr_trello_shortid_454'
+    #   subject.instance_variable_set(:@id, 0)
+    #   expect(subject).to receive(:find_card).with(line)
+    #   expect($stdout).to receive(:puts)
+    #   debugger
+    #   expect(Reviewlette.find_card(line)).to eq false
+    # end
+  end
 
-    it 'finds the card by Github title' do
-      line = 'Review_1337_name_of_pr_trello_shortid'
-      expect(Reviewlette.find_card(line)).to eq false
+  describe '.fetch_branch' do
+
+    it 'gets the branch_name from github' do
+      branch_name = 'review_github_branch_name_trello_23'
+      subject.instance_variable_set(:@pullreq_ids, {number: 1})
+      split_branch_name = branch_name.split('_')
+      instance_variable! :github_connection
+      expect(Reviewlette.instance_variable_get(:@pullreq_ids)).to receive_message_chain(:values, :index => 0).and_return number
+      expect(github_connection).to receive(:get_branch_name).and_return branch_name
+      expect(branch_name).to receive(:split).with('_').and_return split_branch_name
+      expect(split_branch_name).to receive_message_chain(:last, :to_i)
+      Reviewlette.fetch_branch
     end
   end
 
@@ -111,6 +127,18 @@ describe Reviewlette do
     instance_variable! :github_connection
     expect(github_connection).to receive_message_chain(:list_issues, :select)
     Reviewlette.get_unassigned_github_issues
+    end
+  end
+
+  describe '.match_pr_id_with_issue_id' do
+
+    it 'matches issue id with pr id' do
+      instance_variable! :github_connection
+      instance_variable! :repo
+      pulls  = {number: 1}
+      allow(github_connection).to receive(:list_pulls).and_return [pulls]
+      allow(pulls).to receive(:number).and_return [1]
+      Reviewlette.match_pr_id_with_issue_id
     end
   end
 

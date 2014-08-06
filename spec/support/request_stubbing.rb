@@ -288,7 +288,7 @@ module Helpers
 end
 
 def oauth_client
-  Octokit::Client.new(:access_token => '87614b09dd141c22800f96f11737ade5226d7ba8')
+  Octokit::Client.new(:access_token => '13131313131313131313131313')
 end
 
 

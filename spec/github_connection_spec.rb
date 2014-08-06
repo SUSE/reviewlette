@@ -83,4 +83,26 @@ describe Reviewlette::GithubConnection do
       expect(connection.team).to be_a_kind_of Array
     end
   end
+
+  describe '#list_pulls' do
+    let( :connection ) { subject.new }
+
+    it 'lists a pullrequests for a given repository' do
+      expect(connection.client).to receive(:pull_requests)
+      connection.list_pulls(connection.repo)
+    end
+  end
+
+  describe '#get_branch_name' do
+    let( :connection ) { subject.new }
+
+    it 'get branch name based on a repo and a pullrequest id' do
+      pulls = [double({ 'head' => double({ 'ref' => 'number'})})]
+      pr = pulls.first
+      expect(connection.client).to receive(:pull_requests).with(connection.repo).and_return pulls
+      expect(pulls).to receive(:[]).with(3).and_return pr
+      expect(pr).to receive(:head).and_return pr.head
+      connection.get_branch_name(3, connection.repo)
+    end
+  end
 end
