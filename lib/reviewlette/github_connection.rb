@@ -18,6 +18,14 @@ module Reviewlette
       @client = Octokit::Client.new(:access_token => GITHUB_CONFIG['token'])
     end
 
+    def get_branch_name(pr_id, repo)
+      @client.pull_requests(repo)[pr_id].head.ref
+    end
+
+    def list_pulls(repo)
+      @client.pull_requests(repo)
+    end
+
     def pull_merged?(repo, number)
       client.pull_merged?(repo, number)
     end

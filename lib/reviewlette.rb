@@ -21,7 +21,6 @@ module Reviewlette
 
   class << self
 
-
     # Execute logic.
     def spin
       setup
@@ -47,15 +46,37 @@ module Reviewlette
       end
     end
 
-    # Finds card based on title of Github Issue
+    # Finds card based on title of Github Issue.
+    # Or by branch name if title does not include the trello number.
+    # Happens if the pullrequest consists of only one commit.
     def find_card(title)
       begin
+        match_pr_id_with_issue_id
         @id = title.split('_').last.to_i
-        raise NoTrelloCardException, "Could not find a Trello card. Found #{title.split('_').last} instead, maybe the naming of your pullrequest is wrong?" if @id == 0
+        @id = fetch_branch if @id == 0 && !(@pullreq_ids.values.index(@number)).nil?
+        raise NoTrelloCardException, "Could not find a Trello card. Found #{title.split('_').last} instead, maybe the naming of your pullrequest is wrong? And/or you dont have a branch?" if @id == 0
         true
       rescue NoTrelloCardException => e
         puts (e.message)
         false
+      end
+    end
+
+    # gets the branchname from github pullrequest
+    def fetch_branch
+      pr_id = @pullreq_ids.values.index(@number)
+      branch_name = @github_connection.get_branch_name(pr_id, @repo)
+      branch_name.split('_').last.to_i
+    end
+
+    # Matches Pull Request IDs with the respective Order of PullRequests
+    # to call them and get the branch name.
+    def match_pr_id_with_issue_id
+      @pullreq_ids = {}
+      @counter = 0
+      @github_connection.list_pulls(@repo).each do |x|
+        @pullreq_ids[@counter] = x.number
+        @counter +=1
       end
     end
 
@@ -84,7 +105,7 @@ module Reviewlette
         @card = @trello_connection.find_card_by_id(@id)
         true
       else
-        @logger.warn("Id not found, skipping.. for Issue #{@title} with number #{@number}")
+        @logger.warn("Id not found, skipping Issue #{@title} with number #{@number}")
         false
       end
     end
