@@ -42,8 +42,5 @@ module Reviewlette
       @client.list_issues(repo)
     end
 
-    def team
-      @team ||= NAMES.values
-    end
   end
 end

@@ -2,6 +2,7 @@ require 'yaml'
 require 'debugger'
 require 'trello'
 require 'logger'
+require_relative 'database'
 require_relative 'exceptions'
 
 class Trello::Card
@@ -48,7 +49,8 @@ module Reviewlette
     end
 
     def team
-      @team ||= NAMES.keys
+      #where vacation is not false
+      @team ||= Reviewlette::Database.new.get_users_trello_entries
     end
 
     def find_column(column_name)

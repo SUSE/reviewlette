@@ -1,5 +1,7 @@
 require 'reviewlette/trello_connection'
 require 'reviewlette/github_connection'
+require 'reviewlette/database'
+require 'reviewlette/vacations'
 require 'yaml'
 require 'octokit'
 require 'trello'
@@ -14,9 +16,8 @@ end
 
 module Reviewlette
 
-  attr_accessor :trello_connection, :github_connection, :repo, :board
+  attr_accessor :trello_connection, :github_connection, :repo, :board, :db
 
-  NAMES = YAML.load_file("#{File.dirname(__FILE__)}/../config/.members.yml")
   TRELLO_CONFIG1 = YAML.load_file("#{File.dirname(__FILE__)}/../config/.trello.yml")
 
   class << self
@@ -28,6 +29,7 @@ module Reviewlette
         @number = a[:number]
         @title = a[:title]
         @body = a[:body]
+        update_vacations
         find_card(@title.to_s)
         if find_id
           if set_reviewer
@@ -37,6 +39,7 @@ module Reviewlette
             add_to_trello_card
             comment_on_trello
             move_to_list
+            @db.add_pr_to_db(@title, @reviewer.username)
             @reviewer = nil
           else
             comment_on_error
@@ -60,6 +63,29 @@ module Reviewlette
         puts (e.message)
         false
       end
+    end
+
+    def update_vacations
+      @db.get_users_tel_entries.each do |name|
+        @vacations = Reviewlette::Vacations.find_vacations(name) #tel_name
+        evaluate_vacations(name)
+      end
+    end
+
+    def evaluate_vacations(reviewer)
+      parse_vacations.each do |check|
+        check[1] = check[0] unless check[1] # Rewrite if statement with catch to prevent this error?
+        if (check[0]..check[1]).cover?(Date.today)
+          @db.set_vacation_flag(reviewer, 'true')
+        else
+          @db.set_vacation_flag(reviewer, 'false') # hopefully not to_bool?
+        end
+      end
+    end
+
+    def parse_vacations
+      split = @vacations.map { |x| x.split(' - ') }
+      split.map { |x| x.map { |b| Date.parse(b) } }
     end
 
     # gets the branchname from github pullrequest
@@ -93,6 +119,7 @@ module Reviewlette
     # Sets instance variables.
     def setup
       @logger = Logger.new('review.log')
+      @db = Reviewlette::Database.new
       @github_connection = Reviewlette::GithubConnection.new
       @trello_connection = Reviewlette::TrelloConnection.new
       @board = Trello::Board.find(TRELLO_CONFIG1['board_id'])
@@ -128,7 +155,7 @@ module Reviewlette
 
     # Get Trelloname from configfile.
     def transform_name
-      @githubname = NAMES[@trelloname]
+      @githubname = @db.find_gh_name_by_trello_name(@trelloname)
     end
 
     # Adds Assignee on GitHub.
