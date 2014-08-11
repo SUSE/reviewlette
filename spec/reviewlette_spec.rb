@@ -20,6 +20,7 @@ describe Reviewlette do
   let(:logger) { double 'logger' }
   let(:trello_connection) { double 'trello_connection' }
   let(:reviewer) {double 'reviewer'}
+  let(:db) {Reviewlette::Database.new}
   let(:github_connection) { double 'github_connection' }
   let(:full_comment) { @full_comment = "@#{trelloname} will review https://github.com/#{repo}/issues/#{number.to_s}" }
   let(:exp) { AlreadyAssignedException }
@@ -38,6 +39,7 @@ describe Reviewlette do
       expect(Reviewlette).to receive(:setup)
       expect(Reviewlette).to receive(:get_unassigned_github_issues).and_return [issue]
       expect(Reviewlette).to receive(:find_card)
+      expect(Reviewlette).to receive(:update_vacations)
     end
 
     it 'spins until find_id' do
@@ -75,6 +77,11 @@ describe Reviewlette do
       expect(Reviewlette).to receive(:add_to_trello_card)
       expect(Reviewlette).to receive(:comment_on_trello)
       expect(Reviewlette).to receive(:move_to_list)
+      Reviewlette.instance_variable_set(:@reviewer, 'hi')
+      Reviewlette.instance_variable_set(:@db, db)
+      allow(@reviewer).to receive(:username)
+      expect(db).to receive(:add_pr_to_db).with('Title', @reviewer.username)
+      expect(Reviewlette.instance_variable_set(:@reviewer, nil))
       expect(Reviewlette).to_not receive(:comment_on_error)
       Reviewlette.spin
     end
@@ -88,15 +95,7 @@ describe Reviewlette do
       expect(Reviewlette).to receive(:match_pr_id_with_issue_id).and_return [pulls]
       allow(Reviewlette.find_card(line)).to receive(:match_pr_id_with_issue_id).and_return Array
     end
-    #
-    # it 'finds the card by Github branch' do
-    #   line = 'Review_1337_name_of_pr_trello_shortid_454'
-    #   subject.instance_variable_set(:@id, 0)
-    #   expect(subject).to receive(:find_card).with(line)
-    #   expect($stdout).to receive(:puts)
-    #   debugger
-    #   expect(Reviewlette.find_card(line)).to eq false
-    # end
+
   end
 
   describe '.fetch_branch' do
@@ -124,9 +123,9 @@ describe Reviewlette do
 
   describe '.get_unassigned_github_issues' do
     it 'returns all unassigned issues' do
-    instance_variable! :github_connection
-    expect(github_connection).to receive_message_chain(:list_issues, :select)
-    Reviewlette.get_unassigned_github_issues
+      instance_variable! :github_connection
+      expect(github_connection).to receive_message_chain(:list_issues, :select)
+      Reviewlette.get_unassigned_github_issues
     end
   end
 
@@ -308,6 +307,46 @@ describe Reviewlette do
     it 'sets up the board' do
       Reviewlette.setup
       expect(Reviewlette.instance_variable_get('@board')).to be_kind_of Object #same
+    end
+  end
+
+  describe '.update_vacations' do
+
+    it 'updates vacationsstatus based on tel vacation output' do
+      vacations = ['2015-01-07', '2015-01-25']
+      instance_variable_set(:@vacations, vacations)
+      instance_variable_set(:@db, db)
+      expect(Reviewlette::Vacations).to receive(:find_vacations).at_least(:once)
+      expect(Reviewlette).to receive(:evaluate_vacations).at_least(:once)
+      Reviewlette.update_vacations
+    end
+  end
+
+  describe '.evaluate_vacations' do
+
+    it 'checks if vacation state is true' do
+      today = Date.today
+      allow(subject).to receive(:parse_vacations).and_return [[today]]
+      subject.evaluate_vacations('jschmid')
+    end
+
+    it 'checks if vacation state is false' do
+      allow(subject).to receive(:parse_vacations).and_return [1,2]
+      subject.evaluate_vacations('jschmid')
+    end
+  end
+
+
+  describe '.parse_vacations' do
+
+    it 'parses Date in proper format' do
+      # vacations = ["2014-08-23 - 2014-09-14", "2014-10-03 - 2014-10-05", "2014-12-24 - 2014-12-28"]
+      # split = [["2014-08-23", "2014-09-14"], ["2014-10-03", "2014-10-05"], ["2014-12-24", "2014-12-28"]]
+      # ret = [['Sat, 23 Aug 2014', 'Sun, 14 Sep 2014'], ['Fri, 03 Oct 2014', 'Sun, 05 Oct 2014'], ['Wed, 24 Dec 2014', 'Sun, 28 Dec 2014']]
+      # instance_variable_set(:@vacations, vacations)
+      # expect(instance_variable_get(:@vacations)).to receive(:map).and_return split
+      # expect(split).to receive(:map).and_return ret
+      # subject.parse_vacations
     end
   end
 end

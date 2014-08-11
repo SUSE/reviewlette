@@ -76,14 +76,6 @@ describe Reviewlette::GithubConnection do
     end
   end
 
-  describe '#team' do
-    let( :connection ) { subject.new }
-
-    it '#team' do
-      expect(connection.team).to be_a_kind_of Array
-    end
-  end
-
   describe '#list_pulls' do
     let( :connection ) { subject.new }
 
