@@ -5,23 +5,31 @@ describe Reviewlette::Database do
 
   subject { Reviewlette::Database.new }
 
+  describe '#count_reviews' do
 
-  describe '#count_up' do
+    it 'counts the reviews done by a single user' do
+      to_be_counted = [1,2,3,4]
+      expect(subject.instance_variable_get(:@reviews)).to receive(:where).and_return to_be_counted
+      expect(to_be_counted).to receive(:count).and_return to_be_counted.count
+      subject.count_reviews(subject.reviewer.first.values[1])
+    end
+  end
 
-    it 'increases the reviews-count by one for each pullrequest taken' do
-      # instance_variable_set(:@reviewer, double('reviewer'))
-      # expect(subject.reviewer).to receive_message_chain(:where, :update, :select, :first, :values, :first).and_return 3
-      # subject.count_up('jschmid')
+  describe '#get_users_gh_entries' do
+    it 'gets all github usernames in #Array' do
+      expect(subject.reviewer).to receive(:map).and_return [['jschmid']]
+      subject.get_users_gh_entries
     end
   end
 
   describe '#add_pr_to_db' do
 
-    it 'adds the name of the pullrequest to the database' do
-      # instance_variable_set(:@reviewer, double('reviewer'))
-      # expect(subject.reviewer).to receive(:insert).with(any_args)
-      # expect(subject.add_pr_to_db('asd_23_23asd_123', 'jschmid')).to receive(:count_up)
-      # subject.add_pr_to_db('asd_23_23asd_123', 'jschmid')
+    it 'writes the name of the pr to db' do
+
+      expect(subject.reviews).to receive(:insert)
+      expect(subject).to receive(:count_up).with(subject.reviewer.first.values[1])
+      subject.add_pr_to_db('review_123', subject.reviewer.first.values[1])
     end
   end
+
 end

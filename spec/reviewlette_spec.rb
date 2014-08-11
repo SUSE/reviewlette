@@ -344,8 +344,9 @@ describe Reviewlette do
       # split = [["2014-08-23", "2014-09-14"], ["2014-10-03", "2014-10-05"], ["2014-12-24", "2014-12-28"]]
       # ret = [['Sat, 23 Aug 2014', 'Sun, 14 Sep 2014'], ['Fri, 03 Oct 2014', 'Sun, 05 Oct 2014'], ['Wed, 24 Dec 2014', 'Sun, 28 Dec 2014']]
       # instance_variable_set(:@vacations, vacations)
+      # instance_variable_set(:@split, split)
       # expect(instance_variable_get(:@vacations)).to receive(:map).and_return split
-      # expect(split).to receive(:map).and_return ret
+      # expect(instance_variable_get(:@split)).to receive(:map).and_return ret
       # subject.parse_vacations
     end
   end
