@@ -9,12 +9,17 @@ Tool to automatically assign a "Reviewer" to a GitHub Issue and to the attached 
 
 What it does:
 
-- Finds unassigned issues on GitHub
-- Assignes a member of your team
-- Locates the right Card on Trello
-- Checks if the assignee is on vacation(using tel)
-- Adds the assigned member to the Card
-- If the Issue/PullRequest is closed or merged move it in the right column
+- Finds unassigned issues on GitHub.
+- Assignes a member of your team.
+- Locates the right Card on Trello.
+- Checks if the assignee is on vacation(using tel).
+- Adds the assigned member to the Card.
+- If the Issue/PullRequest is closed or merged move it in the right column.
+- Prints graphs using Morris.js to display statistics(autorefresh every 5 seconds).
+
+
+![graphs][http://h.dropcanvas.com/72fj0/graph.jpg]
+
 
 ## Installation
 
