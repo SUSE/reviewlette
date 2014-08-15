@@ -15,8 +15,6 @@ module Reviewlette
 
       @reviewer = DATABASE.from(:reviewer)
       @reviews = DATABASE.from(:reviews)
-      # require 'byebug'
-      # byebug
     end
 
     def count_up(reviewer)
