@@ -19,7 +19,5 @@ require_relative '../lib/reviewlette/vacations'
 require_relative '../lib/reviewlette/database'
 require 'reviewlette'
 require 'support/request_stubbing'
-require 'debugger'
-require 'byebug'
 
 
