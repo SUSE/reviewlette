@@ -25,7 +25,6 @@ describe Reviewlette::Database do
   describe '#add_pr_to_db' do
 
     it 'writes the name of the pr to db' do
-
       expect(subject.reviews).to receive(:insert)
       expect(subject).to receive(:count_up).with(subject.reviewer.first.values[1])
       subject.add_pr_to_db('review_123', subject.reviewer.first.values[1])
