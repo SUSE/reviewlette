@@ -41,7 +41,7 @@ module Reviewlette
       xkey: 'created_at',
       colors: ['#80BFFF', '#F0F0F0', '#0000FF', '#00FFFF', '#FF00FF', '#C0C0C0'],
       ykeys: #{@db.get_users_trello_entries},
-      labels: ['Value']
+      labels: #{@db.get_users_trello_entries}
       });
       </script>
 
