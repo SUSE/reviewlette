@@ -14,10 +14,12 @@ module Reviewlette
 
 
     def model_graphs(data2, data, type)
-      @content = %Q|<link rel="stylesheet" href="http://cdn.oesmith.co.uk/morris-0.5.1.css">
+      @content = %Q|
+      <link rel="stylesheet" href="http://cdn.oesmith.co.uk/morris-0.5.1.css">
       <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
       <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
       <script src="http://cdn.oesmith.co.uk/morris-0.5.1.min.js"></script>
+      <meta http-equiv="refresh" content="15" />
 
       <div id="Donut" style="height: 250px;"></div>
       <div id="Line" style="height: 250px;"></div>
