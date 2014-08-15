@@ -24,9 +24,7 @@ describe Reviewlette::TrelloConnection do
       expect_any_instance_of(Trello::Configuration).to receive(:member_token=).with(config['oauthtoken']).and_call_original
       subject.new
     end
-
   end
-
 
   describe '#find_member_by_id(id)' do
     let( :trello_connection ) { subject.new }

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Reviewlette do
 
-  # set instance variable from local variable
+  # set instance variable from local variables
   def instance_variable!(variable_name)
     Reviewlette.instance_variable_set("@#{variable_name}", send(variable_name.to_sym))
   end
