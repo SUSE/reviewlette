@@ -1,6 +1,7 @@
 require 'reviewlette/trello_connection'
 require 'reviewlette/github_connection'
 require 'reviewlette/database'
+require 'reviewlette/graph_gen'
 require 'reviewlette/vacations'
 require 'yaml'
 require 'octokit'
@@ -41,6 +42,7 @@ module Reviewlette
             move_to_list
             @db.add_pr_to_db(@title, @reviewer.username)
             @reviewer = nil
+            Reviewlette::Graphgenerator.new.write_to_graphs('graph.html',Reviewlette::Graphgenerator.new.model_graphs(Reviewlette::Database.new.conscruct_line_data.to_json, Reviewlette::Database.new.conscruct_graph_struct.to_json, 'Donut'))
           else
             comment_on_error
           end

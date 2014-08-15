@@ -1,30 +1,17 @@
 <link rel="stylesheet" href="http://cdn.oesmith.co.uk/morris-0.5.1.css">
-<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
-<script src="http://cdn.oesmith.co.uk/morris-0.5.1.min.js"></script>
+      <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+      <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+      <script src="http://cdn.oesmith.co.uk/morris-0.5.1.min.js"></script>
 
+      <div id="Donutgraph" style="height: 250px;"></div>
 
-<div id="myfirstchart" style="height: 250px;"></div>
-
-<script>
-new Morris.Line({
-// ID of the element in which to draw the chart.
-element: 'myfirstchart',
-// Chart data records -- each entry in this array corresponds to a point on
-// the chart.
-data: [
-{ year: '2008', value: 20 },
-{ year: '2009', value: 10 },
-{ year: '2010', value: 5 },
-{ year: '2011', value: 5 },
-{ year: '2012', value: 20 }
-],
-// The name of the data record attribute that contains x-values.
-xkey: 'year',
-// A list of names of data record attributes that contain y-values.
-ykeys: ['value'],
-// Labels for the ykeys -- will be displayed when you hover over the
-// chart.
-labels: ['Value']
-});
+      <script>
+    new Morris.Donut({
+        element: 'Donutgraph',
+        data: [{"label":"jschmid","value":3},{"label":"vlewin","value":4},{"label":"b4mboo","value":5},{"label":"thomasschmidt","value":6},{"label":"achernikov","value":7}],
+        xkey: 'label',
+        colors: ['#80BFFF', '#F0F0F0', '#0000FF', '#00FFFF', '#FF00FF', '#C0C0C0'],
+        ykeys: ['value'],
+        labels: ['Value']
+    });
 </script>

@@ -1,5 +1,4 @@
 require 'sequel'
-
 module Reviewlette
 
   class Database
@@ -20,7 +19,7 @@ module Reviewlette
     end
 
     def add_pr_to_db(pr_name, reviewer)
-      @reviews.insert(:name => pr_name, :reviewer => reviewer)
+      @reviews.insert(:name => pr_name, :reviewer => reviewer, :created_at => Date.today)
       count_up(reviewer)
     end
 
@@ -48,5 +47,26 @@ module Reviewlette
       @reviewer.where(:tel_name => reviewer).update(:vacation => state)
     end
 
+    def conscruct_graph_struct
+      data = []
+      get_users_trello_entries.each do |x|
+        data.push({ label: x, value: count_reviews(x) })
+      end
+      data
+    end
+
+    def conscruct_line_data
+      data = []
+      date_range = (Date.today - 7 )..(Date.today)
+      get_users_trello_entries.each do |name|
+          date_range.each do |date|
+          abc = {}
+          abc[:created_at] = date
+          abc[name] = @reviews.where(:reviewer => name, :created_at => date).select(:created_at).count
+          data.push(abc)
+          end
+      end
+      data
+    end
   end
 end

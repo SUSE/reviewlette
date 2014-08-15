@@ -1,5 +1,4 @@
 require 'yaml'
-require 'debugger'
 require 'trello'
 require 'logger'
 require_relative 'database'
