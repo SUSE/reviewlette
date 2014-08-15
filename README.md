@@ -18,7 +18,7 @@ What it does:
 - Prints graphs using Morris.js to display statistics(autorefresh every 5 seconds).
 
 
-![graphs](http://h.dropcanvas.com/72fj0/graph.jpg, "graphs")
+![alt tag](http://h.dropcanvas.com/72fj0/graph.jpg)
 
 
 ## Installation
