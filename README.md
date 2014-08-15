@@ -70,7 +70,9 @@ insert into employee values('John','Smith', '0', '', 'github_name', 'trello_name
 ---
 
 [Using Octokit as a GitHub api wrapper](https://github.com/octokit/octokit.rb)
+
 [Using Sequel as Database Module](https://github.com/jeremyevans/sequel)
+
 [Using ruby-trello as a Trello api wrapper](https://github.com/jeremytregunna/ruby-trello)
 
 
