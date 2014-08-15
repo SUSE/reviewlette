@@ -69,7 +69,7 @@ You can either use a GUI like [Sqlite database browser](http://sqlitebrowser.org
 e.g.
 
 ```ruby
-insert into employee values('John','Smith', '0', '', 'github_name', 'trello_name', 'tel_name');
+insert into employee values('John','Smith', '0', '', 'github_name', 'trello_name', 'false', 'tel_name');
 ```
 
 ---
