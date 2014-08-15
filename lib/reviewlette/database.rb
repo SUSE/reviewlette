@@ -3,13 +3,20 @@ module Reviewlette
 
   class Database
 
-    DATABASE = Sequel.connect('sqlite://test.db')
+    FileUtils.mkdir_p("#{File.join(ENV['HOME'])}/.config/reviewlette/") unless Dir.exists?("#{ENV['HOME']}/.config/reviewlette")
+    FileUtils.cp ("#{File.dirname(__FILE__)}/../../reviewlette.db"), ("#{File.join(Dir.home)}" + '/.config/reviewlette/') unless File.exists?(("#{File.join(Dir.home)}" + '/.config/reviewlette/reviewlette.db'))
+
+    @path = "#{File.join(ENV['HOME'])}/.config/reviewlette"
+    DATABASE = Sequel.connect("sqlite://#{@path}/reviewlette.db")
 
     attr_accessor :reviewer, :reviews
 
     def initialize
+
       @reviewer = DATABASE.from(:reviewer)
       @reviews = DATABASE.from(:reviews)
+      # require 'byebug'
+      # byebug
     end
 
     def count_up(reviewer)
