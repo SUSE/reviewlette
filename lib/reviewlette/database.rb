@@ -13,7 +13,6 @@ module Reviewlette
     attr_accessor :reviewer, :reviews
 
     def initialize
-
       @reviewer = DATABASE.from(:reviewer)
       @reviews = DATABASE.from(:reviews)
     end

@@ -4,6 +4,10 @@ module Reviewlette
 
   class Graphgenerator
 
+    def initialize
+      @db = Reviewlette::Database.new
+    end
+
     def write_to_graphs(filename, content)
       File.open(filename, 'w') { |file| file.write(content) }
     end
@@ -36,7 +40,7 @@ module Reviewlette
       data: #{data2},
       xkey: 'created_at',
       colors: ['#80BFFF', '#F0F0F0', '#0000FF', '#00FFFF', '#FF00FF', '#C0C0C0'],
-      ykeys: ['jschmid', 'vlewin', 'thomasschmidt'],
+      ykeys: #{@db.get_users_trello_entries},
       labels: ['Value']
       });
       </script>
