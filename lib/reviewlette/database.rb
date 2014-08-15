@@ -1,4 +1,5 @@
 require 'sequel'
+require 'fileutils'
 module Reviewlette
 
   class Database
