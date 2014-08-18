@@ -6,10 +6,6 @@ describe Reviewlette::GithubConnection do
 
   describe '.new' do
 
-    it 'populates @repo with repo string' do
-      expect(subject.new.repo).to be_a_kind_of String
-    end
-
     it 'sets up Github connection' do
       config = Reviewlette::GithubConnection::GITHUB_CONFIG
       expect(Octokit::Client).to receive(:new).with(:access_token => config['token'])
@@ -35,14 +31,14 @@ describe Reviewlette::GithubConnection do
     let( :connection ) { subject.new }
 
     it 'adds an assignee to the gh issue' do
-      params = [4, 'title', 'body', 'name']
+      params = [connection.repo, 4, 'title', 'body', 'name']
       params2 = [connection.repo, 4, 'title', 'body',  :assignee => 'name']
       allow(connection.client).to receive(:update_issue).with(*params2).and_return true
       expect(connection.add_assignee(*params)).to eq true
     end
 
     it 'fails to add an assignee to the gh issue' do
-      params = [4, 'title', 'body', 'name']
+      params = [connection.repo, 4, 'title', 'body', 'name']
       params2 = [connection.repo, 4, 'title', 'body',  :assignee => 'name']
       allow(connection.client).to receive(:update_issue).with(*params2).and_return false
       expect(connection.add_assignee(*params)).to eq false
@@ -54,14 +50,14 @@ describe Reviewlette::GithubConnection do
 
     it 'comments on a given issue' do
       params = [connection.repo, 4, '@name is your reviewer :thumbsup: check url']
-      params2 = [4, 'name', 'url']
+      params2 = [connection.repo, 4, 'name', 'url']
       allow(connection.client).to receive(:add_comment).with(*params).and_return true
       expect(connection.comment_on_issue(*params2)).to eq true
     end
 
     it 'fails to comment on a given issue and fails' do
       params = [connection.repo, 4, '@name is your reviewer :thumbsup: check url']
-      params2 = [4, 'name', 'url']
+      params2 = [connection.repo, 4, 'name', 'url']
       allow(connection.client).to receive(:add_comment).with(*params).and_return false
       expect(connection.comment_on_issue(*params2)).to eq false
     end

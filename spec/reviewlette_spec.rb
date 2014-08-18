@@ -18,6 +18,7 @@ describe Reviewlette do
   let(:id) { 23 }
   let(:card) { stub_card_call }
   let(:logger) { double 'logger' }
+  let(:repos) { %w[repo/repo, repos/repos] }
   let(:trello_connection) { double 'trello_connection' }
   let(:reviewer) {double 'reviewer'}
   let(:db) {Reviewlette::Database.new}
@@ -31,12 +32,15 @@ describe Reviewlette do
       instance_variable! :repo
       instance_variable! :trello_connection
       instance_variable! :id
+      instance_variable! :repos
       instance_variable! :title
       instance_variable! :body
       instance_variable! :number
       instance_variable! :logger
+      instance_variable! :repos
       issue = { number: 1, title: 'Title', body: 'Body' }
       expect(Reviewlette).to receive(:setup)
+      expect(Reviewlette).to receive(:get_available_repos).and_return [repo]
       expect(Reviewlette).to receive(:get_unassigned_github_issues).and_return [issue]
       expect(Reviewlette).to receive(:find_card)
       expect(Reviewlette).to receive(:update_vacations)
@@ -84,6 +88,16 @@ describe Reviewlette do
       expect(Reviewlette.instance_variable_set(:@reviewer, nil))
       expect(Reviewlette).to_not receive(:comment_on_error)
       Reviewlette.spin
+    end
+  end
+
+  describe '.get_available_repos' do
+
+    it 'pulls in an array on avaialble repos' do
+
+      instance_variable! :repos
+      expect(Reviewlette.instance_variable_get(:@repos)).to be_kind_of Array #ok
+      Reviewlette.get_available_repos
     end
   end
 
@@ -205,7 +219,7 @@ describe Reviewlette do
       instance_variable! :body
       instance_variable! :number
       instance_variable! :githubname
-      expect(github_connection).to receive(:add_assignee).with(23, 'title', 'body', 'gitty').and_return true
+      expect(github_connection).to receive(:add_assignee).with('repo/repo', 23, 'title', 'body', 'gitty').and_return true
       Reviewlette.add_reviewer_on_github
     end
   end
@@ -217,7 +231,7 @@ describe Reviewlette do
       instance_variable! :githubname
       instance_variable! :github_connection
       expect(card).to receive(:url).and_return 'www.example.url'
-      expect(github_connection).to receive(:comment_on_issue).with(23, 'gitty', 'www.example.url').and_return true
+      expect(github_connection).to receive(:comment_on_issue).with('repo/repo', 23, 'gitty', 'www.example.url').and_return true
       Reviewlette.comment_on_github
     end
   end
