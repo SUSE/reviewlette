@@ -65,6 +65,15 @@ Fill `config/.github.yml` with your **token** and **repo**
 
 Edit the `reviewlette.db` scaffold in the main directory to your needs.
 
+Structure:
+
+| Primary key   | First_Name     | Last_name     | Reviews_count  | created_at    | github_name   | trello_name   | vacation_status | tel_name      |
+|:-------------:|:-------------: |:-------------:|:-------------: |:-------------:|:-------------:|:-------------:|:-------------:  |:-------------:|
+| Integer(PK)   | Text           | Text          | Integer        | Text          |  Text         |Text           |          Numeric|           Text|
+
+
+
+
 You can either use a GUI like [Sqlite database browser](http://sqlitebrowser.org/) or the sqlite commandline interface
 
 e.g.
