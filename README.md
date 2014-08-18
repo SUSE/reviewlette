@@ -67,9 +67,10 @@ Edit the `reviewlette.db` scaffold in the main directory to your needs.
 
 Structure:
 
-| Primary key   | First_Name     | Last_name     | Reviews_count  | created_at    | github_name   | trello_name   | vacation_status | tel_name      |
+| primary_key   | first_name     | last_name     | Reviews_count  | created_at    | github_name   | trello_name   | vacation_status | tel_name      |
 |:-------------:|:-------------: |:-------------:|:-------------: |:-------------:|:-------------:|:-------------:|:-------------:  |:-------------:|
 | Integer(PK)   | Text           | Text          | Integer        | Text          |  Text         |Text           |          Numeric|           Text|
+| 1             | Joshua         | Schmid        | 30             | 2014-01-01    |  jschmid1     |jschmid1       |          false  |        jschmid|
 
 
 
