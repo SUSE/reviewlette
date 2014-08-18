@@ -26,29 +26,36 @@ module Reviewlette
     # Execute logic.
     def spin
       setup
-      get_unassigned_github_issues.each do |a|
-        @number = a[:number]
-        @title = a[:title]
-        @body = a[:body]
-        update_vacations
-        find_card(@title.to_s)
-        if find_id
-          if set_reviewer
-            transform_name
-            add_reviewer_on_github
-            comment_on_github
-            add_to_trello_card
-            comment_on_trello
-            move_to_list
-            @db.add_pr_to_db(@title, @reviewer.username)
-            @reviewer = nil
-            Reviewlette::Graphgenerator.new.write_to_graphs('graph.html',Reviewlette::Graphgenerator.new.model_graphs(Reviewlette::Database.new.conscruct_line_data.to_json, Reviewlette::Database.new.conscruct_graph_struct.to_json, 'Donut'))
-          else
-            comment_on_error
+      get_available_repos.each do |repo|
+        @repo = repo
+        get_unassigned_github_issues.each do |issue|
+          @number = issue[:number]
+          @title = issue[:title]
+          @body = issue[:body]
+          update_vacations
+          find_card(@title.to_s)
+          if find_id
+            if set_reviewer
+              transform_name
+              add_reviewer_on_github
+              comment_on_github
+              add_to_trello_card
+              comment_on_trello
+              move_to_list
+              @db.add_pr_to_db(@title, @reviewer.username)
+              @reviewer = nil
+              Reviewlette::Graphgenerator.new.write_to_graphs('graph.html',Reviewlette::Graphgenerator.new.model_graphs(Reviewlette::Database.new.conscruct_line_data.to_json, Reviewlette::Database.new.conscruct_graph_struct.to_json, 'Donut'))
+            else
+              comment_on_error
+            end
           end
+          puts 'No new issues.' unless @issues.present?
         end
-        puts 'No new issues.' unless @issues.present?
       end
+    end
+
+    def get_available_repos
+      @repos = Reviewlette::GithubConnection::GITHUB_CONFIG['repo']
     end
 
     # Finds card based on title of Github Issue.
@@ -125,7 +132,6 @@ module Reviewlette
       @github_connection = Reviewlette::GithubConnection.new
       @trello_connection = Reviewlette::TrelloConnection.new
       @board = Trello::Board.find(TRELLO_CONFIG1['board_id'])
-      @repo = Reviewlette::GithubConnection::GITHUB_CONFIG['repo']
     end
 
     # Finds a sets card.
@@ -162,12 +168,12 @@ module Reviewlette
 
     # Adds Assignee on GitHub.
     def add_reviewer_on_github
-      @github_connection.add_assignee(@number, @title, @body, @githubname) if @number && @githubname
+      @github_connection.add_assignee(@repo, @number, @title, @body, @githubname) if @number && @githubname
     end
 
     # Comments on GitHub.
     def comment_on_github
-      @github_connection.comment_on_issue(@number, @githubname, @card.url) if @number && @githubname
+      @github_connection.comment_on_issue(@repo, @number, @githubname, @card.url) if @number && @githubname
     end
     # Adds Reviewer on Trello Card.
     def add_to_trello_card

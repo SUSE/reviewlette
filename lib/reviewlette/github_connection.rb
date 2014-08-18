@@ -14,7 +14,6 @@ module Reviewlette
     end
 
     def gh_connection
-      @repo = GITHUB_CONFIG['repo']
       @client = Octokit::Client.new(:access_token => GITHUB_CONFIG['token'])
     end
 
@@ -30,12 +29,12 @@ module Reviewlette
       client.pull_merged?(repo, number)
     end
 
-    def add_assignee(number, title, body, name)
-      @client.update_issue(@repo, number, title, body, :assignee => name)
+    def add_assignee(repo, number, title, body, name)
+      @client.update_issue(repo, number, title, body, :assignee => name)
     end
 
-    def comment_on_issue(number, name, trello_card_url)
-      @client.add_comment(@repo, number, "@#{name} is your reviewer :thumbsup: check #{trello_card_url}")
+    def comment_on_issue(repo, number, name, trello_card_url)
+      @client.add_comment(repo, number, "@#{name} is your reviewer :thumbsup: check #{trello_card_url}")
     end
 
     def list_issues(repo)
