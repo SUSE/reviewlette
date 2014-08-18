@@ -43,8 +43,8 @@ gem install reviewlette
 #### Name your pullrequest like so:
 #### Review_#23_name_of_review_42  <= trello card number
 
-```
 Fill `config/.trello.yml` with your **consumerkey**, **consumersecret**, **oauthtoken** and **board_id**
+
 ```yml
 -comsumerkey: theconsumerkey11
 -consumersecret: theconsumersecret11
@@ -54,9 +54,10 @@ Fill `config/.trello.yml` with your **consumerkey**, **consumersecret**, **oauth
 [Which can be generated here](https://trello.com/1/appKey/generate)
 
 Fill `config/.github.yml` with your **token** and **repo**
+
 ```yml
 -token: thetokenfromgithub
--repo: my/repo
+-repo: [my/repo]
 ```
 
 [Which can be generated here](https://github.com/settings/applications/new)
