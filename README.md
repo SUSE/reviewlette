@@ -57,7 +57,7 @@ Fill `config/.github.yml` with your **token** and **repo**
 
 ```yml
 -token: thetokenfromgithub
--repo: [my/repo]
+-repo: ['my/repo', 'my/otherrepo']
 ```
 
 [Which can be generated here](https://github.com/settings/applications/new)
