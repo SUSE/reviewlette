@@ -37,10 +37,10 @@ module Reviewlette
           if find_id
             if set_reviewer
               transform_name
-              # add_reviewer_on_github
-              # comment_on_github
+              add_reviewer_on_github
+              comment_on_github
               # add_to_trello_card
-              # comment_on_trello
+              comment_on_trello
               move_to_list
               @db.add_pr_to_db(@title, @reviewer.username)
               @reviewer = nil
