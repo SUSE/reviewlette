@@ -78,7 +78,7 @@ describe Reviewlette do
       expect(Reviewlette).to receive(:transform_name)
       expect(Reviewlette).to receive(:add_reviewer_on_github)
       expect(Reviewlette).to receive(:comment_on_github)
-      expect(Reviewlette).to receive(:add_to_trello_card)
+      # expect(Reviewlette).to receive(:add_to_trello_card)
       expect(Reviewlette).to receive(:comment_on_trello)
       expect(Reviewlette).to receive(:move_to_list)
       Reviewlette.instance_variable_set(:@reviewer, 'hi')
