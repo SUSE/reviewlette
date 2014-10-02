@@ -33,8 +33,8 @@ module Reviewlette
           @title = issue[:title]
           @body = issue[:body]
           update_vacations
-          find_card(@title.to_s)
-          if find_id
+          
+          if find_card(@title.to_s) and find_id
             if set_reviewer
               transform_name
               add_reviewer_on_github
@@ -69,6 +69,7 @@ module Reviewlette
         raise NoTrelloCardException, "Could not find a Trello card. Found #{title.split('_').last} instead, maybe the naming of your pullrequest is wrong? And/or you dont have a branch?" if @id == 0
         true
       rescue NoTrelloCardException => e
+        @logger.error e.message
         puts (e.message)
         false
       end
