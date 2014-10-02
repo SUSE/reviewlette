@@ -42,7 +42,7 @@ describe Reviewlette do
       expect(Reviewlette).to receive(:setup)
       expect(Reviewlette).to receive(:get_available_repos).and_return [repo]
       expect(Reviewlette).to receive(:get_unassigned_github_issues).and_return [issue]
-      expect(Reviewlette).to receive(:find_card)
+      expect(Reviewlette).to receive(:find_card).and_return true
       expect(Reviewlette).to receive(:update_vacations)
     end
 
