@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'reviewlette/version'
+require 'reviewlette'
 
 Gem::Specification.new do |spec|
   spec.name          = "reviewlette"
-  spec.version       = Reviewlette::VERSION
+  spec.version       = VERSION
   spec.authors       = ["jschmid1"]
   spec.email         = ["jschmid@suse.de"]
   spec.summary       = %q{Randomly assignes a reviewer to your Pullrequest and corresponding Trello Card.}

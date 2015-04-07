@@ -1,0 +1,25 @@
+members:
+  - name: Tom
+    suse_username: tschmidt
+    trello_username: thomasschmidt
+    github_username: digitaltom
+  - name: Artem
+    suse_username: achernikov
+    trello_username: artemchernikov
+    github_username: kalabiyau
+  - name: Kirill
+    suse_username: kpimenov
+    trello_username: kirillpimenov
+    github_username: kirushik
+  - name: Vlad
+    suse_username: vlewin
+    trello_username: vlewin
+    github_username: vlewin
+  - name: Will
+    suse_username: wstephenson
+    trello_username: wstephenson
+    github_username: wstephenson
+  - name: Nadja
+    suse_username: nwalter
+    trello_username: nadjaw2
+    github_username: nadjaw

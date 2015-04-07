@@ -2,7 +2,7 @@ source 'http://rubygems.org'
 
 gem 'json'
 gem 'haml'
-gem 'octokit', '~> 3.0'
+gem 'octokit'
 gem 'ruby-trello'
 gem 'rdoc'
 gem 'rspec'

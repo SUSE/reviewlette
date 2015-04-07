@@ -2,6 +2,8 @@
 
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 require 'reviewlette'
+require 'byebug'
 
-Reviewlette.spin
+reviewlette = Reviewlette.new
+reviewlette.run
 
