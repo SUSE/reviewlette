@@ -21,7 +21,16 @@ class GithubConnection
   end
 
   def reviewer_comment(number, assignee, trello_card)
-    @client.add_comment(@repo, number, "@#{assignee} is your reviewer :thumbsup: check #{trello_card.url}")
+    comment = "@#{assignee} is your reviewer :dancers: check #{trello_card.url} \n" \
+              "@#{assignee}: Please review this pull request using our guidelines: \n" \
+              "* test for acceptance criteria / functionality \n" \
+              "* check if the new code is covered with tests \n" \
+              "* check for unintended consequences \n" \
+              "* encourage usage of the boyscout rule \n" \
+              "* make sure the code is architected in the best way \n" \
+              "* check that no unnecessary technical debt got introduced \n" \
+              "* make sure that no unnecessary FIXMEs or TODOs got added \n"
+    @client.add_comment(@repo, number, comment)
   end
 
   def unassigned_pull_requests

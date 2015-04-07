@@ -26,8 +26,7 @@ describe GithubConnection do
     it 'comments on a given issue' do
       card = Trello::Card.new
       allow(card).to receive(:url).and_return('url')
-      expect(connection.client).to receive(:add_comment).with(connection.repo, 11,
-                                                              "@test is your reviewer :thumbsup: check url")
+      expect(connection.client).to receive(:add_comment).with(connection.repo, 11, anything)
       connection.reviewer_comment(11, 'test', card)
     end
   end
