@@ -1,38 +1,30 @@
 require 'net/telnet'
-module Reviewlette
 
-  class Vacations
+class Vacations
 
-    def self.find_vacations(username)
-      vacations = []
-      tn = Net::Telnet.new('Host' => 'present.suse.de', 'Port' => 9874, 'Binmode' => false)
-      collect = false
-      tn.cmd(username) do |data|
-        data.split("\n").each do |l|
-          collect = true if l =~ /^Absence/
-          next unless collect
-          if l[0,1] == "-"
-            collect = false
-            next
-          end
-          dates = []
-          l.split(" ").each do |date|
-            unless date =~ /#{Time.now.year}/
-              next
-            end
-            dates.push(date)
-          end
-          case dates.size
-            when 1
-              vacations.push("#{dates[0]}")
-            when 2
-              vacations.push("#{dates[0]} - #{dates[1]}")
-            else
-          end
+  def self.find_vacations(username)
+    vacations = []
+    tn = Net::Telnet.new('Host' => 'present.suse.de', 'Port' => 9874, 'Binmode' => false)
+    tn.cmd("#{username}").split("\n").each do |line|
+      if line =~ /\S{3} #{Time.now.year}-\d\d-\d\d/
+        dates = []
+        line.split(" ").each do |date|
+          dates.push(date) if date =~ /#{Time.now.year}-\d\d-\d\d/
         end
+        dates[1] = dates[0] unless dates[1]
+        vacations.push(Date.parse(dates[0])..Date.parse(dates[1]))
       end
-      tn.close
-      vacations
     end
+    tn.close
+    vacations
   end
+
+  def self.members_on_vacation
+    members_on_vacation = MEMBERS_CONFIG['members'].collect do |member|
+      username = member['suse_username']
+      username if (username && Vacations.find_vacations(username).any? { |v| v === Date.today })
+    end
+    members_on_vacation.compact
+  end
+
 end

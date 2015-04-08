@@ -2,14 +2,8 @@
 *.db
 *.log
 *.html
-database
-*.yml~
 .idea
-/.idea
-.idea*
-/.idea/*
 *.rbc
-*.yml
 .bundle
 coverage
 .swp
@@ -25,3 +19,7 @@ tmp
 _yardoc
 rdoc/
 doc/
+config/github.yml
+config/trello.yml
+config/members.yml
+
