@@ -102,7 +102,7 @@ DEPENDENCIES
   coveralls
   haml
   json
-  octokit
+  octokit (~> 3.8.0)
   prophet
   rake
   rdoc
