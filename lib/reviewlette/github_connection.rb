@@ -17,7 +17,7 @@ class GithubConnection
   end
 
   def add_assignee(number, assignee)
-    @client.update_issue(@repo, number, :assignee => assignee)
+    @client.update_issue(@repo, number, assignee: assignee)
   end
 
   def reviewer_comment(number, assignee, trello_card)
