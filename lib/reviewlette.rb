@@ -3,7 +3,7 @@ require 'reviewlette/github_connection'
 require 'reviewlette/vacations'
 require 'yaml'
 
-VERSION = '0.0.7'
+VERSION = '0.0.8'
 MEMBERS_CONFIG = YAML.load_file("#{File.dirname(__FILE__)}/../config/members.yml")
 
 class Reviewlette

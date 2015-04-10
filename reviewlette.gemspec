@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_runtime_dependency 'ruby-trello', '=1.1.1'
-  spec.add_runtime_dependency 'octokit', '=3.1.0'
+  spec.add_runtime_dependency 'octokit', '>=3.8.0'
   spec.add_runtime_dependency 'sequel', '=4.13.0'
   spec.add_runtime_dependency 'sqlite3', '=1.3.9'
 end
