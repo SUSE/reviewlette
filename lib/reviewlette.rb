@@ -5,16 +5,24 @@ require 'yaml'
 
 VERSION = '0.0.8'
 MEMBERS_CONFIG = YAML.load_file("#{File.dirname(__FILE__)}/../config/members.yml")
+GITHUB_CONFIG  = YAML.load_file("#{File.dirname(__FILE__)}/../config/github.yml")
 
 class Reviewlette
 
   def initialize
-    @github = GithubConnection.new
     @trello = TrelloConnection.new
   end
 
   def run
-    @github.unassigned_pull_requests.each do |issue|
+    GITHUB_CONFIG['repos'].each do |repo|
+      puts "Checking repository #{repo}..."
+      check_repo(repo, GITHUB_CONFIG['token'])
+    end
+  end
+
+  def check_repo(repo, token)
+    @repo = GithubConnection.new(repo, token)
+    @repo.unassigned_pull_requests.each do |issue|
       issue_id = issue[:number]
       issue_title = issue[:title]
       puts "*** Checking unassigned github pull request: #{issue_title}"
@@ -23,9 +31,9 @@ class Reviewlette
         puts "Found matching trello card: #{card.name}"
         reviewer = select_reviewer(issue, card)
         if reviewer
-          @github.add_assignee(issue_id, reviewer['github_username'])
-          @github.reviewer_comment(issue_id, reviewer['github_username'], card)
-          comment = "@#{reviewer['trello_username']} will review https://github.com/#{@github.repo}/issues/#{issue_id}"
+          @repo.add_assignee(issue_id, reviewer['github_username'])
+          @repo.reviewer_comment(issue_id, reviewer['github_username'], card)
+          comment = "@#{reviewer['trello_username']} will review https://github.com/#{@repo.repo}/issues/#{issue_id}"
           @trello.comment_on_card(comment, card)
           @trello.move_card_to_list(card, 'In review')
         else

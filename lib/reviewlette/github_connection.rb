@@ -1,15 +1,14 @@
 require 'yaml'
 require 'octokit'
 
-GITHUB_CONFIG = YAML.load_file("#{File.dirname(__FILE__)}/../../config/github.yml")
 
 class GithubConnection
 
   attr_accessor :client, :repo
 
-  def initialize
-    @client = Octokit::Client.new(:access_token => GITHUB_CONFIG['token'])
-    @repo = GITHUB_CONFIG['repo']
+  def initialize(repo, token)
+    @client  = Octokit::Client.new(:access_token => token)
+    @repo    = repo
   end
 
   def list_pulls
