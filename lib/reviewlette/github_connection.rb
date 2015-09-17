@@ -36,4 +36,8 @@ class GithubConnection
     list_pulls.select { |issue| !issue[:assignee] }
   end
 
+  def repo_exists?
+    @client.repository?(@repo)
+  end
+
 end

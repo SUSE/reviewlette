@@ -22,6 +22,12 @@ class Reviewlette
 
   def check_repo(repo, token)
     @repo = GithubConnection.new(repo, token)
+
+    if not @repo.repo_exists?
+      puts "Repository #{repo} does not exist. Check your configuration"
+      return
+    end
+
     @repo.unassigned_pull_requests.each do |issue|
       issue_id = issue[:number]
       issue_title = issue[:title]
