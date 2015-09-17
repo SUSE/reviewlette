@@ -19,15 +19,15 @@ class Reviewlette
     end
   end
 
-  def check_repo(repo, token)
-    @repo = GithubConnection.new(repo, token)
+  def check_repo(repo_name, token)
+    repo = GithubConnection.new(repo_name, token)
 
-    unless @repo.repo_exists?
-      puts "Repository #{repo} does not exist. Check your configuration"
+    unless repo.repo_exists?
+      puts "Repository #{repo_name} does not exist. Check your configuration"
       return
     end
 
-    @repo.unassigned_pull_requests.each do |issue|
+    repo.unassigned_pull_requests.each do |issue|
       issue_id    = issue[:number]
       issue_title = issue[:title]
       puts "*** Checking unassigned github pull request: #{issue_title}"
@@ -36,9 +36,9 @@ class Reviewlette
         puts "Found matching trello card: #{card.name}"
         reviewer = select_reviewer(issue, card)
         if reviewer
-          @repo.add_assignee(issue_id, reviewer['github_username'])
-          @repo.reviewer_comment(issue_id, reviewer['github_username'], card)
-          comment = "@#{reviewer['trello_username']} will review https://github.com/#{repo}/issues/#{issue_id}"
+          repo.add_assignee(issue_id, reviewer['github_username'])
+          repo.reviewer_comment(issue_id, reviewer['github_username'], card)
+          comment = "@#{reviewer['trello_username']} will review https://github.com/#{repo_name}/issues/#{issue_id}"
           @trello.comment_on_card(comment, card)
           @trello.move_card_to_list(card, 'In review')
         else
@@ -55,11 +55,11 @@ class Reviewlette
     reviewers = MEMBERS_CONFIG['members']
     # remove people on vacation
     members_on_vacation = Vacations.members_on_vacation
-    reviewers = reviewers.reject{|r| members_on_vacation.include? r['suse_username'] }
+    reviewers = reviewers.reject {|r| members_on_vacation.include? r['suse_username'] }
     # remove trello card owner
-    reviewers = reviewers.reject{|r| card.members.map(&:username).include? r['trello_username'] }
+    reviewers = reviewers.reject {|r| card.members.map(&:username).include? r['trello_username'] }
     reviewer = reviewers.sample
-    puts "Selected reviewer: #{reviewer['name']} from pool #{reviewers.map{|r| r['name']}}" if reviewer
+    puts "Selected reviewer: #{reviewer['name']} from pool #{reviewers.map {|r| r['name'] }}" if reviewer
     reviewer
   end
 
