@@ -1,13 +1,12 @@
 require 'yaml'
 require 'octokit'
 
-
 class GithubConnection
 
   attr_accessor :client, :repo
 
   def initialize(repo, token)
-    @client  = Octokit::Client.new(:access_token => token)
+    @client  = Octokit::Client.new(access_token: token)
     @repo    = repo
   end
 

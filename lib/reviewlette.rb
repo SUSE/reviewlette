@@ -8,7 +8,6 @@ MEMBERS_CONFIG = YAML.load_file("#{File.dirname(__FILE__)}/../config/members.yml
 GITHUB_CONFIG  = YAML.load_file("#{File.dirname(__FILE__)}/../config/github.yml")
 
 class Reviewlette
-
   def initialize
     @trello = TrelloConnection.new
   end
@@ -23,13 +22,13 @@ class Reviewlette
   def check_repo(repo, token)
     @repo = GithubConnection.new(repo, token)
 
-    if not @repo.repo_exists?
+    unless @repo.repo_exists?
       puts "Repository #{repo} does not exist. Check your configuration"
       return
     end
 
     @repo.unassigned_pull_requests.each do |issue|
-      issue_id = issue[:number]
+      issue_id    = issue[:number]
       issue_title = issue[:title]
       puts "*** Checking unassigned github pull request: #{issue_title}"
       card_id = issue_title.split(/[_ -#\.]/).last.to_i
@@ -39,7 +38,7 @@ class Reviewlette
         if reviewer
           @repo.add_assignee(issue_id, reviewer['github_username'])
           @repo.reviewer_comment(issue_id, reviewer['github_username'], card)
-          comment = "@#{reviewer['trello_username']} will review https://github.com/#{@repo.repo}/issues/#{issue_id}"
+          comment = "@#{reviewer['trello_username']} will review https://github.com/#{repo}/issues/#{issue_id}"
           @trello.comment_on_card(comment, card)
           @trello.move_card_to_list(card, 'In review')
         else
