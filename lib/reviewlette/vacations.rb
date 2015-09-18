@@ -19,8 +19,8 @@ class Vacations
     vacations
   end
 
-  def self.members_on_vacation
-    members_on_vacation = MEMBERS_CONFIG['members'].collect do |member|
+  def self.members_on_vacation(members)
+    members_on_vacation = members.collect do |member|
       username = member['suse_username']
       username if (username && Vacations.find_vacations(username).any? { |v| v === Date.today })
     end
