@@ -15,3 +15,10 @@ gem 'prophet'
 gem 'coveralls'
 gem 'sequel'
 gem 'sqlite3'
+
+
+group :development do
+  gem 'guard'
+  gem 'guard-rspec'
+  gem 'libnotify'
+end
