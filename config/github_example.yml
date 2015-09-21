@@ -1,4 +1,5 @@
 # generate the token here: https://github.com/settings/tokens/new
 
 token:
-repos: ["SUSE/connect", "SUSE/happy-customer", "SUSE/reviewlette"]
+  repos: ["SUSE/connect", "SUSE/happy-customer", "SUSE/reviewlette", "SUSE/scc-docker-images",
+    "SUSE/scc-provisioning", "SUSE/scc-token", "SUSE/TeamDashboard" ]
