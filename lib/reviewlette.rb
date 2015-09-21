@@ -3,7 +3,7 @@ require 'reviewlette/github_connection'
 require 'reviewlette/vacations'
 require 'yaml'
 
-VERSION = '0.0.8'
+VERSION = '0.0.9'
 
 class Reviewlette
   def initialize
