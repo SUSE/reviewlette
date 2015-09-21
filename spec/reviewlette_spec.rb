@@ -6,8 +6,8 @@ describe Reviewlette do
   let(:reviewlette)    { subject.new }
 
   let(:members_config) { { 'members' => [member1, member2] } }
-  let(:member1)        { { 'suse_username' => 'test1', 'trello_username' => 'trellotest1' } }
-  let(:member2)        { { 'suse_username' => 'test2', 'trello_username' => 'trellotest2' } }
+  let(:member1)        { { 'name' => 'test1',  'suse_username' => 'test1', 'trello_username' => 'trellotest1' } }
+  let(:member2)        { { 'name' => 'test2', 'suse_username' => 'test2', 'trello_username' => 'trellotest2' } }
 
   let(:github_config)  { { token: token, repos: [repo, repo2] } }
   let(:token)          { '1234' }
@@ -68,13 +68,10 @@ describe Reviewlette do
   describe '.select_reviewer' do
     it 'excludes members on vacation' do
       card       = Trello::Card.new
-      members_config.inspect
-      first_user = members_config['members'].first
-      last_user  = members_config['members'].last
 
       allow(card).to receive(:members).and_return([])
-      expect(Vacations).to receive(:members_on_vacation).and_return([first_user[:suse_username]])
-      expect(reviewlette.select_reviewer(nil, card)).to eq(last_user)
+      expect(Vacations).to receive(:members_on_vacation).and_return([member1['suse_username']])
+      expect(reviewlette.select_reviewer(nil, card)).to eq(member2)
     end
 
     it 'excludes the owner of the trello card' do
