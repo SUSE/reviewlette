@@ -7,12 +7,15 @@ describe Vacations do
   let(:member1) { { 'suse_username' => 'testuser1' } }
   let(:member2) { { 'suse_username' => 'testuser2' } }
   let(:member3) { { 'suse_username' => 'testuser3' } }
+  let(:timestamp) { 'Absence    : Thu 2015-04-02 - Tue 2015-04-07' }
 
   describe '.find_vacations' do
     it 'parses the vacations dates out of tel' do
-      timestamp = 'Absence    : Thu 2015-04-02 - Tue 2015-04-07'
+      stub_telnet = double
+      expect(stub_telnet).to receive(:cmd).with('testuser1').and_return(timestamp)
+      expect(stub_telnet).to receive(:close).and_return(true)
 
-      expect_any_instance_of(Net::Telnet).to receive(:cmd).with('testuser1').and_return(timestamp)
+      expect(Net::Telnet).to receive(:new).and_return(stub_telnet)
       vacations = subject.find_vacations('testuser1')
 
       expect(vacations).to be_kind_of(Array)
