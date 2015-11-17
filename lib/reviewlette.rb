@@ -32,7 +32,14 @@ class Reviewlette
       issue_title = issue[:title]
 
       puts "*** Checking unassigned github pull request: #{issue_title}"
-      card_id = issue_title.split(/[_ -#\.]/).last.to_i
+      matched = issue_title.match(/\d+[_'"]?$/)
+
+      unless matched
+        puts "Pull request not assigned to a trello card"
+        next
+      end
+
+      card_id = matched[0].to_i
       card    = @trello.find_card_by_id(card_id)
 
       unless card
