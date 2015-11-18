@@ -38,6 +38,11 @@ describe Reviewlette do
   end
 
   describe '.check_repo' do
+    it 'skips repo when invalid' do
+      expect(GithubConnection).to receive(:repo_exists?).and_return false
+      expect { reviewlette.check_repo(repo, token) }.to output(/does not exist/).to_stdout
+    end
+
     it 'iterates over all open pull requests and extracts trello ids from name' do
       expect(GithubConnection).to receive(:repo_exists?).and_return true
       expect(GithubConnection).to receive(:unassigned_pull_requests).and_return([{number: 11, title: 'test_issue_12'}])
@@ -45,6 +50,15 @@ describe Reviewlette do
 
       reviewlette.check_repo(repo, token)
     end
+
+    it 'iterates over all open pr and skip pr with no card id' do
+      expect(GithubConnection).to receive(:repo_exists?).and_return true
+      expect(GithubConnection).to receive(:unassigned_pull_requests).and_return([{ number: 11, title: 'no card id' }])
+
+      expect { reviewlette.check_repo(repo, token) }.to output(/Pull request not assigned to a trello card/).to_stdout
+    end
+
+
 
     it 'adds assignee and reviewer comment on github, adds comment on trello and moves card' do
       card = Trello::Card.new
@@ -61,6 +75,18 @@ describe Reviewlette do
       expect(TrelloConnection).to receive(:move_card_to_list).with(card, 'In review')
 
       reviewlette.check_repo(repo, token)
+    end
+
+    it 'does not find a reviewer' do
+
+      card = Trello::Card.new
+
+      expect(GithubConnection).to receive(:repo_exists?).and_return true
+      expect(GithubConnection).to receive(:unassigned_pull_requests).and_return([{ number: 11, title: 'test_issue_12' }])
+      expect(TrelloConnection).to receive(:find_card_by_id).with(12).and_return(card)
+      expect(reviewlette).to receive(:select_reviewer).and_return false
+
+      expect { reviewlette.check_repo(repo, token) }.to output(/Could not find a reviewer/).to_stdout
     end
 
   end
