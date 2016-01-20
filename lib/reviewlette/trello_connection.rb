@@ -20,7 +20,13 @@ class TrelloConnection
     card.add_member(reviewer)
   end
 
-  def comment_on_card(comment, card)
+  def comment_reviewers(card, repo_name, issue_id, reviewers)
+    comment = "@#{reviewers.first['trello_username']}"
+    reviewers.drop(1).each do |reviewer|
+      comment += " and @#{reviewer['trello_username']}"
+    end
+    comment += " will review https://github.com/#{repo_name}/issues/#{issue_id}"
+
     card.add_comment(comment)
   end
 
@@ -42,4 +48,3 @@ class TrelloConnection
   end
 
 end
-

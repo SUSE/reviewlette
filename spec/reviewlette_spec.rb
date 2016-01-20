@@ -6,7 +6,7 @@ describe Reviewlette do
   let(:reviewlette)    { subject.new }
 
   let(:members_config) { { 'members' => [member1, member2] } }
-  let(:member1)        { { 'name' => 'test1',  'suse_username' => 'test1', 'trello_username' => 'trellotest1' } }
+  let(:member1)        { { 'name' => 'test1', 'suse_username' => 'test1', 'trello_username' => 'trellotest1' } }
   let(:member2)        { { 'name' => 'test2', 'suse_username' => 'test2', 'trello_username' => 'trellotest2' } }
 
   let(:github_config)  { { token: token, repos: [repo, repo2] } }
@@ -19,6 +19,7 @@ describe Reviewlette do
     allow(GithubConnection).to receive(:new).with(repo, token).and_return GithubConnection
     allow(YAML).to receive(:load_file).with(/github\.yml/).and_return github_config
     allow(YAML).to receive(:load_file).with(/members\.yml/).and_return members_config
+
   end
 
   describe '.new' do
@@ -58,20 +59,21 @@ describe Reviewlette do
       expect { reviewlette.check_repo(repo, token) }.to output(/Pull request not assigned to a trello card/).to_stdout
     end
 
-
-
     it 'adds assignee and reviewer comment on github, adds comment on trello and moves card' do
-      card = Trello::Card.new
+      card        = Trello::Card.new
+      user        = { 'suse_username' => 'test', 'github_username' => 'testgit', 'trello_username' => 'testtrello' }
+      pullrequest = { number: 11, title: 'test_issue_12' }
 
       expect(GithubConnection).to receive(:repo_exists?).and_return true
-      expect(GithubConnection).to receive(:unassigned_pull_requests).and_return([{number: 11, title: 'test_issue_12'}])
+      expect(GithubConnection).to receive(:unassigned_pull_requests).and_return([pullrequest])
       expect(TrelloConnection).to receive(:find_card_by_id).with(12).and_return(card)
-      expect(reviewlette).to receive(:select_reviewer).and_return({'suse_username' => 'test', 'github_username' => 'testgit'})
+      expect(reviewlette).to receive(:how_many_should_review).with(card).and_return([])
+      expect(reviewlette).to receive(:select_reviewers).and_return([user])
 
       expect(GithubConnection).to receive(:add_assignee).with(11, 'testgit')
-      expect(GithubConnection).to receive(:reviewer_comment).with(11, 'testgit', card)
+      expect(GithubConnection).to receive(:reviewers_comment).with(11, [user], card)
 
-      expect(TrelloConnection).to receive(:comment_on_card).with("@ will review https://github.com/SUSE/test/issues/11", card)
+      expect(TrelloConnection).to receive(:comment_reviewers).with(card, 'SUSE/test', 11, [user])
       expect(TrelloConnection).to receive(:move_card_to_list).with(card, 'In review')
 
       reviewlette.check_repo(repo, token)
@@ -84,28 +86,44 @@ describe Reviewlette do
       expect(GithubConnection).to receive(:repo_exists?).and_return true
       expect(GithubConnection).to receive(:unassigned_pull_requests).and_return([{ number: 11, title: 'test_issue_12' }])
       expect(TrelloConnection).to receive(:find_card_by_id).with(12).and_return(card)
-      expect(reviewlette).to receive(:select_reviewer).and_return false
+      expect(reviewlette).to receive(:select_reviewers).and_return []
 
       expect { reviewlette.check_repo(repo, token) }.to output(/Could not find a reviewer/).to_stdout
     end
 
   end
 
-  describe '.select_reviewer' do
+  describe '.select_reviewers' do
     it 'excludes members on vacation' do
       card       = Trello::Card.new
 
       allow(card).to receive(:members).and_return([])
       expect(Vacations).to receive(:members_on_vacation).and_return([member1['suse_username']])
-      expect(reviewlette.select_reviewer(nil, card)).to eq(member2)
+      expect(reviewlette.select_reviewers(card, 1)).to eq([member2])
     end
 
     it 'excludes the owner of the trello card' do
       card = Trello::Card.new
+      reviewers = [member1, member2]
 
-      allow(card).to receive_message_chain(:members, :map).and_return(['trellotest1'])
       expect(Vacations).to receive(:members_on_vacation).and_return([])
-      expect(reviewlette.select_reviewer(nil, card)).to eq(members_config['members'].last)
+      allow(card).to receive_message_chain(:members, :map).and_return(reviewers)
+      expect(reviewlette.select_reviewers(card).size).to eq(1)
+    end
+
+    it 'selects n reviewers' do
+      card = Trello::Card.new
+
+      allow(card).to receive_message_chain(:members, :map).and_return([member1])
+      expect(Vacations).to receive(:members_on_vacation).and_return([])
+      expect(reviewlette.select_reviewers(card, 2)).to match_array([member1, member2])
+    end
+
+    it 'selects only one reviewer if no second is available' do
+      card = Trello::Card.new
+      allow(card).to receive_message_chain(:members, :map).and_return([member1, member2])
+      expect(Vacations).to receive(:members_on_vacation).and_return(['test1'])
+      expect(reviewlette.select_reviewers(card, 2)).to eq([member2])
     end
   end
 end

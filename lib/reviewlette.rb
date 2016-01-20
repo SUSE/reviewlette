@@ -2,8 +2,13 @@ require 'reviewlette/trello_connection'
 require 'reviewlette/github_connection'
 require 'reviewlette/vacations'
 require 'yaml'
+require 'pry'
 
 VERSION = '0.0.10'
+
+# Assume cards have following card title when estimated
+# (8) This is the card name'
+POINTS_REGEX = /\(([\d.]+)\)/
 
 class Reviewlette
   def initialize
@@ -35,7 +40,7 @@ class Reviewlette
       matched = issue_title.match(/\d+[_'"]?$/)
 
       unless matched
-        puts "Pull request not assigned to a trello card"
+        puts 'Pull request not assigned to a trello card'
         next
       end
 
@@ -48,35 +53,41 @@ class Reviewlette
       end
 
       puts "Found matching trello card: #{card.name}"
-      reviewer = select_reviewer(issue, card)
+      reviewers = select_reviewers(card, how_many_should_review(card))
 
-      unless reviewer
+      if reviewers.empty?
         puts "Could not find a reviewer for card: #{card.name}"
         next
       end
 
-      repo.add_assignee(issue_id, reviewer['github_username'])
-      repo.reviewer_comment(issue_id, reviewer['github_username'], card)
-      comment = "@#{reviewer['trello_username']} will review https://github.com/#{repo_name}/issues/#{issue_id}"
+      repo.add_assignee(issue_id, reviewers.first['github_username'])
+      repo.reviewers_comment(issue_id, reviewers, card)
 
-      @trello.comment_on_card(comment, card)
+      @trello.comment_reviewers(card, repo_name, issue_id, reviewers)
       @trello.move_card_to_list(card, 'In review')
     end
   end
 
-  def select_reviewer(issue, card)
+  def select_reviewers(card, number = 1)
     reviewers = @members['members']
 
     # remove people on vacation
     members_on_vacation = Vacations.members_on_vacation(reviewers)
 
-    reviewers = reviewers.reject {|r| members_on_vacation.include? r['suse_username'] }
+    reviewers = reviewers.reject { |r| members_on_vacation.include? r['suse_username'] }
 
     # remove trello card owner
-    reviewers = reviewers.reject {|r| card.members.map(&:username).include? r['trello_username'] }
-    reviewer = reviewers.sample
-    puts "Selected reviewer: #{reviewer['name']} from pool #{reviewers.map {|r| r['name'] }}" if reviewer
-    reviewer
+    reviewers = reviewers.reject { |r| card.members.map(&:username).include? r['trello_username'] }
+
+    reviewers = reviewers.sample(number)
+    puts "Selected reviewers: #{reviewers} from pool #{reviewers.map { |r| r['name'] }}" if reviewers
+    reviewers
   end
 
+  def how_many_should_review(card)
+    if card.name =~ POINTS_REGEX && card.name.match(ESTIMATED_REGEX).captures.first.to_i > 5
+      return 2
+    end
+    1
+  end
 end
