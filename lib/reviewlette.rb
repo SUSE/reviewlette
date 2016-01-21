@@ -61,7 +61,7 @@ class Reviewlette
       end
 
       repo.add_assignee(issue_id, reviewers.first['github_username'])
-      repo.reviewers_comment(issue_id, reviewers, card)
+      repo.comment_reviewers(issue_id, reviewers, card)
 
       @trello.comment_reviewers(card, repo_name, issue_id, reviewers)
       @trello.move_card_to_list(card, 'In review')
@@ -80,12 +80,12 @@ class Reviewlette
     reviewers = reviewers.reject { |r| card.members.map(&:username).include? r['trello_username'] }
 
     reviewers = reviewers.sample(number)
-    puts "Selected reviewers: #{reviewers} from pool #{reviewers.map { |r| r['name'] }}" if reviewers
+    puts "Selected reviewers: #{reviewers.map { |r| r['name'] }} from pool #{@members['members'].map { |r| r['name'] }}" if reviewers
     reviewers
   end
 
   def how_many_should_review(card)
-    if card.name =~ POINTS_REGEX && card.name.match(ESTIMATED_REGEX).captures.first.to_i > 5
+    if card.name =~ POINTS_REGEX && card.name.match(POINTS_REGEX).captures.first.to_i > 5
       return 2
     end
     1

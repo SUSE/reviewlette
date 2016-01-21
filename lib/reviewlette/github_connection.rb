@@ -24,7 +24,6 @@ class GithubConnection
       assignees += " and #{reviewer['github_username']}"
     end
 
-
     comment = "@#{assignees} reviews your pull request :dancers: check #{trello_card.url} \n" \
               "@#{assignees}: Please review this pull request using our guidelines: \n" \
               "* test for acceptance criteria / functionality \n" \

@@ -71,7 +71,7 @@ describe Reviewlette do
       expect(reviewlette).to receive(:select_reviewers).and_return([user])
 
       expect(GithubConnection).to receive(:add_assignee).with(11, 'testgit')
-      expect(GithubConnection).to receive(:reviewers_comment).with(11, [user], card)
+      expect(GithubConnection).to receive(:comment_reviewers).with(11, [user], card)
 
       expect(TrelloConnection).to receive(:comment_reviewers).with(card, 'SUSE/test', 11, [user])
       expect(TrelloConnection).to receive(:move_card_to_list).with(card, 'In review')
@@ -125,5 +125,26 @@ describe Reviewlette do
       expect(Vacations).to receive(:members_on_vacation).and_return(['test1'])
       expect(reviewlette.select_reviewers(card, 2)).to eq([member2])
     end
+  end
+
+  describe '.how_many_should_review' do
+    it 'returns 1 if points of a lesser than 5' do
+      card = Trello::Card.new
+      card.name = '(4) Some sample card'
+      expect(reviewlette.how_many_should_review(card)).to eq 1
+    end
+
+    it 'return 2 if points of a card more than 5' do
+      card = Trello::Card.new
+      card.name = '(8) Some sample card'
+      expect(reviewlette.how_many_should_review(card)).to eq 2
+    end
+
+    it 'returns 1 if the card has no points' do
+      card = Trello::Card.new
+      card.name = 'Not estimated card'
+      expect(reviewlette.how_many_should_review(card)).to eq 1
+    end
+
   end
 end
