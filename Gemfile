@@ -15,11 +15,10 @@ gem 'prophet'
 gem 'coveralls'
 gem 'sequel'
 gem 'sqlite3'
-gem 'debugger-linecache'
-
 
 group :development do
   gem 'guard'
   gem 'guard-rspec'
   gem 'libnotify'
+  gem 'debugger-linecache'
 end

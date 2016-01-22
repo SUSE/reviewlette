@@ -3,11 +3,11 @@ require 'reviewlette/github_connection'
 require 'reviewlette/vacations'
 require 'yaml'
 
-VERSION = '0.0.10'
+VERSION = '0.0.11'
 
 # Assume cards have following card title when estimated
 # (8) This is the card name'
-POINTS_REGEX = /\(([\d.]+)\)/
+POINTS_REGEX = /\(([\d]+)\)/
 
 class Reviewlette
   def initialize

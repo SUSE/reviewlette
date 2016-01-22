@@ -1,7 +1,6 @@
 require 'yaml'
 require 'trello'
 
-
 class TrelloConnection
 
   attr_accessor :board
@@ -21,12 +20,8 @@ class TrelloConnection
   end
 
   def comment_reviewers(card, repo_name, issue_id, reviewers)
-    comment = "@#{reviewers.first['trello_username']}"
-    reviewers.drop(1).each do |reviewer|
-      comment += " and @#{reviewer['trello_username']}"
-    end
+    comment = reviewers.map { |r| "@#{r['trello_username']}" }.join(' and ')
     comment += " will review https://github.com/#{repo_name}/issues/#{issue_id}"
-
     card.add_comment(comment)
   end
 
@@ -46,5 +41,4 @@ class TrelloConnection
   def find_card_by_id(id)
     @board.cards.find { |c| c.short_id == id.to_i }
   end
-
 end
