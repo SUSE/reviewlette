@@ -2,7 +2,6 @@ require 'reviewlette/trello_connection'
 require 'reviewlette/github_connection'
 require 'reviewlette/vacations'
 require 'yaml'
-require 'pry'
 
 VERSION = '0.0.10'
 
@@ -79,9 +78,7 @@ class Reviewlette
     # remove trello card owner
     reviewers = reviewers.reject { |r| card.members.map(&:username).include? r['trello_username'] }
 
-    reviewers = reviewers.sample(number)
-    puts "Selected reviewers: #{reviewers.map { |r| r['name'] }} from pool #{@members['members'].map { |r| r['name'] }}" if reviewers
-    reviewers
+    reviewers.sample(number)
   end
 
   def how_many_should_review(card)
