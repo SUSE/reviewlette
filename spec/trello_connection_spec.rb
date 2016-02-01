@@ -32,10 +32,15 @@ describe TrelloConnection do
     end
   end
 
-  describe '#comment_on_card' do
+  describe '#comment_reviewers' do
     it 'comments on the assigned trello card ' do
-      allow(card).to receive(:add_comment).with('comment').and_return true
-      expect(trello.comment_on_card('comment', card)).to eq true
+      repo_name = 'testrepo'
+      issue_id  = 1
+      reviewers = [{ 'trello_username' => 'test1' }, { 'trello_username' => 'test2' }]
+      comment   = "@test1 and @test2 will review https://github.com/#{repo_name}/issues/#{issue_id}"
+
+      allow(card).to receive(:add_comment).with(comment).and_return true
+      expect(trello.comment_reviewers(card, repo_name, issue_id, reviewers)).to eq true
     end
   end
 

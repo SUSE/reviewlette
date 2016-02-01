@@ -3,9 +3,11 @@ require 'spec_helper'
 describe GithubConnection do
 
   subject { GithubConnection }
-  let( :connection ) { subject.new(repo, token) }
-  let( :repo ) { "test" }
-  let( :token ) { "foo" }
+  let(:connection) { subject.new(repo, token) }
+  let(:repo) { 'test' }
+  let(:token) { 'foo' }
+  let(:member1) { { 'name' => 'test1', 'suse_username' => 'test1', 'github_username' => 'githubtest1' } }
+  let(:member2) { { 'name' => 'test2', 'suse_username' => 'test2', 'github_username' => 'githubtest2' } }
 
   describe '.new' do
     it 'initializes octokit client and repo' do
@@ -21,12 +23,15 @@ describe GithubConnection do
     end
   end
 
-  describe '#reviewer_comment' do
+  describe '#comment_reviewers' do
     it 'comments on a given issue' do
-      card = Trello::Card.new
+      card      = Trello::Card.new
+      reviewers = [member1, member2]
+
       allow(card).to receive(:url).and_return('url')
       expect(connection.client).to receive(:add_comment).with(repo, 11, anything)
-      connection.reviewer_comment(11, 'test', card)
+
+      connection.comment_reviewers(11, reviewers, card)
     end
   end
 

@@ -7,7 +7,7 @@ describe Vacations do
   let(:member1) { { 'suse_username' => 'testuser1' } }
   let(:member2) { { 'suse_username' => 'testuser2' } }
   let(:member3) { { 'suse_username' => 'testuser3' } }
-  let(:timestamp) { 'Absence    : Thu 2015-04-02 - Tue 2015-04-07' }
+  let(:timestamp) { 'Absence    : Thu 2016-04-02 - Tue 2016-04-07' }
 
   describe '.find_vacations' do
     it 'parses the vacations dates out of tel' do
@@ -19,7 +19,7 @@ describe Vacations do
       vacations = subject.find_vacations('testuser1')
 
       expect(vacations).to be_kind_of(Array)
-      expect(vacations).to eq([Date.parse('2015-04-02')..Date.parse('2015-04-07')])
+      expect(vacations).to eq([Date.parse('2016-04-02')..Date.parse('2016-04-07')])
     end
   end
 
