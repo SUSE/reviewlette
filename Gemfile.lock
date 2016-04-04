@@ -56,7 +56,7 @@ GEM
       json (~> 1.8)
       multi_xml (>= 0.5.2)
     i18n (0.6.9)
-    json (1.8.1)
+    json (1.8.3)
     libnotify (0.9.1)
       ffi (>= 1.0.11)
     listen (2.10.1)
@@ -110,7 +110,7 @@ GEM
       json
       oauth (~> 0.4.5)
       rest-client (~> 1.6.7)
-    safe_yaml (1.0.3)
+    safe_yaml (1.0.4)
     sawyer (0.6.0)
       addressable (~> 2.3.5)
       faraday (~> 0.8, < 0.10)
