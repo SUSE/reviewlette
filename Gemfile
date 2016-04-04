@@ -13,8 +13,6 @@ gem 'byebug'
 gem 'simplecov'
 gem 'prophet'
 gem 'coveralls'
-gem 'sequel'
-gem 'sqlite3'
 
 group :development do
   gem 'guard'
