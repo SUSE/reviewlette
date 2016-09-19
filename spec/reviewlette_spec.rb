@@ -19,7 +19,6 @@ describe Reviewlette do
     allow(GithubConnection).to receive(:new).with(repo, token).and_return GithubConnection
     allow(YAML).to receive(:load_file).with(/github\.yml/).and_return github_config
     allow(YAML).to receive(:load_file).with(/members\.yml/).and_return members_config
-
   end
 
   describe '.new' do
@@ -128,22 +127,22 @@ describe Reviewlette do
   end
 
   describe '.how_many_should_review' do
-    it 'returns 1 if points of a lesser than 5' do
-      card = Trello::Card.new
-      card.name = '(4) Some sample card'
-      expect(reviewlette.how_many_should_review(card)).to eq 1
+    subject { Reviewlette.new.how_many_should_review(card) }
+    let(:card) { instance_double('Trello::Card', name: "(#{points}) Some sample card") }
+
+    context 'with 4-point card' do
+      let(:points) { 4 }
+      it { is_expected.to eq(1) }
     end
 
-    it 'return 2 if points of a card more than 5' do
-      card = Trello::Card.new
-      card.name = '(8) Some sample card'
-      expect(reviewlette.how_many_should_review(card)).to eq 2
+    context 'with 8-point card' do
+      let(:points) { 8 }
+      it { is_expected.to eq(2) }
     end
 
-    it 'returns 1 if the card has no points' do
-      card = Trello::Card.new
-      card.name = 'Not estimated card'
-      expect(reviewlette.how_many_should_review(card)).to eq 1
+    context 'with no points specified' do
+      let(:points) { "" }
+      it { is_expected.to eq(1) }
     end
 
   end
