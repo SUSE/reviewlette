@@ -66,7 +66,6 @@ describe Reviewlette do
       expect(GithubConnection).to receive(:repo_exists?).and_return true
       expect(GithubConnection).to receive(:unassigned_pull_requests).and_return([pullrequest])
       expect(TrelloConnection).to receive(:find_card_by_id).with(12).and_return(card)
-      expect(reviewlette).to receive(:how_many_should_review).with(card).and_return([])
       expect(reviewlette).to receive(:select_reviewers).and_return([user])
 
       expect(GithubConnection).to receive(:add_assignee).with(11, 'testgit')
@@ -90,6 +89,20 @@ describe Reviewlette do
       expect { reviewlette.check_repo(repo, token) }.to output(/Could not find a reviewer/).to_stdout
     end
 
+  end
+
+  describe '.scan_flags' do
+    subject { Reviewlette.new.scan_flags(title) }
+
+    context 'title with flags' do
+      let(:title) { '[foo, bar, baz] title' }
+      it { is_expected.to eq(['foo', 'bar', 'baz']) }
+    end
+
+    context 'title with no flags' do
+      let(:title) { 'title' }
+      it { is_expected.to eq([]) }
+    end
   end
 
   describe '.select_reviewers' do
@@ -127,23 +140,16 @@ describe Reviewlette do
   end
 
   describe '.how_many_should_review' do
-    subject { Reviewlette.new.how_many_should_review(card) }
-    let(:card) { instance_double('Trello::Card', name: "(#{points}) Some sample card") }
+    subject { Reviewlette.new.how_many_should_review(flags) }
 
-    context 'with 4-point card' do
-      let(:points) { 4 }
-      it { is_expected.to eq(1) }
-    end
-
-    context 'with 8-point card' do
-      let(:points) { 8 }
+    context 'flags include an exclamation mark' do
+      let(:flags) { ['foo', '!', 'bar'] }
       it { is_expected.to eq(2) }
     end
 
-    context 'with no points specified' do
-      let(:points) { "" }
+    context 'flags do not include an exclamation mark' do
+      let(:flags) { ['foo', 'baz', 'bar'] }
       it { is_expected.to eq(1) }
     end
-
   end
 end

@@ -3,8 +3,6 @@ require 'reviewlette/github_connection'
 require 'reviewlette/vacations'
 require 'yaml'
 
-VERSION = '0.0.11'
-
 # Assume cards have following card title when estimated
 # (8) This is the card name'
 POINTS_REGEX = /\(([\d]+)\)/
@@ -34,6 +32,7 @@ class Reviewlette
     repo.unassigned_pull_requests.each do |issue|
       issue_id    = issue[:number]
       issue_title = issue[:title]
+      issue_flags = scan_flags(issue_title)
 
       puts "*** Checking unassigned github pull request: #{issue_title}"
       matched = issue_title.match(/\d+[_'"]?$/)
@@ -52,7 +51,7 @@ class Reviewlette
       end
 
       puts "Found matching trello card: #{card.name}"
-      reviewers = select_reviewers(card, how_many_should_review(card))
+      reviewers = select_reviewers(card, how_many_should_review(issue_flags))
 
       if reviewers.empty?
         puts "Could not find a reviewer for card: #{card.name}"
@@ -64,6 +63,15 @@ class Reviewlette
 
       @trello.comment_reviewers(card, repo_name, issue_id, reviewers)
       @trello.move_card_to_list(card, 'In review')
+    end
+  end
+
+  def scan_flags(issue_title)
+    flags = issue_title[/\A\[(.*)\]/, 1]
+    if flags
+      flags.split(',').map(&:strip)
+    else
+      []
     end
   end
 
@@ -81,10 +89,8 @@ class Reviewlette
     reviewers.sample(number)
   end
 
-  def how_many_should_review(card)
-    if card.name =~ POINTS_REGEX && card.name.match(POINTS_REGEX).captures.first.to_i > 5
-      return 2
-    end
+  def how_many_should_review(issue_flags)
+    return 2 if issue_flags.include? '!'
     1
   end
 end
