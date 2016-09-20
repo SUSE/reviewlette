@@ -2,9 +2,11 @@ source 'http://rubygems.org'
 
 gemspec
 
-group :development do
+group :development, :test do
   gem 'ap'
   gem 'rake'
+  gem 'debugger-linecache'
+  gem 'byebug'
 end
 
 group :test do
@@ -13,8 +15,6 @@ group :test do
   gem 'guard'
   gem 'guard-rspec'
   gem 'libnotify'
-  gem 'debugger-linecache'
-  gem 'byebug'
   gem 'simplecov'
   gem 'coveralls'
   gem 'rdoc'
