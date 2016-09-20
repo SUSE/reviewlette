@@ -53,7 +53,7 @@ class Reviewlette
       puts "Found matching trello card: #{card.name}"
 
       assignees = issue[:assignees].map { |a| a[:login] }
-      already_assigned_members = @members['members'].select { |m| assignees.include? m['github_username'] }
+      already_assigned_members = @members.select { |m| assignees.include? m['github_username'] }
       wanted_number = how_many_should_review(issue_flags)
 
       reviewers = if assignees.size > wanted_number
@@ -91,7 +91,7 @@ class Reviewlette
   end
 
   def select_reviewers(card, number = 1, already_assigned = [])
-    reviewers = @members['members']
+    reviewers = @members
 
     # remove people on vacation
     members_on_vacation = Vacations.members_on_vacation(reviewers)

@@ -1,9 +1,8 @@
-members:
-  - name:
-    suse_username:
-    trello_username:
-    github_username:
-  - name:
-    suse_username:
-    trello_username:
-    github_username:
+- name:
+  suse_username:
+  trello_username:
+  github_username:
+- name:
+  suse_username:
+  trello_username:
+  github_username:

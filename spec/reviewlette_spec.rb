@@ -5,7 +5,7 @@ describe Reviewlette do
 
   let(:reviewlette)    { subject.new }
 
-  let(:members_config) { { 'members' => [member1, member2] } }
+  let(:members_config) { [member1, member2] }
   let(:member1)        { { 'name' => 'test1', 'suse_username' => 'test1', 'trello_username' => 'trellotest1', 'github_username' => 'pinky' } }
   let(:member2)        { { 'name' => 'test2', 'suse_username' => 'test2', 'trello_username' => 'trellotest2', 'github_username' => 'brain' } }
 
