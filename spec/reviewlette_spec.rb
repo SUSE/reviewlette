@@ -58,7 +58,7 @@ describe Reviewlette do
       expect { reviewlette.check_repo(repo, token) }.to output(/Pull request not assigned to a trello card/).to_stdout
     end
 
-    it 'adds assignee and reviewer comment on github, adds comment on trello and moves card' do
+    it 'adds assignees and reviewers comment on github, adds comment on trello and moves card' do
       card        = Trello::Card.new
       user        = { 'suse_username' => 'test', 'github_username' => 'testgit', 'trello_username' => 'testtrello' }
       pullrequest = { number: 11, title: 'test_issue_12' }
@@ -68,7 +68,7 @@ describe Reviewlette do
       expect(TrelloConnection).to receive(:find_card_by_id).with(12).and_return(card)
       expect(reviewlette).to receive(:select_reviewers).and_return([user])
 
-      expect(GithubConnection).to receive(:add_assignee).with(11, 'testgit')
+      expect(GithubConnection).to receive(:add_assignees).with(11, ['testgit'])
       expect(GithubConnection).to receive(:comment_reviewers).with(11, [user], card)
 
       expect(TrelloConnection).to receive(:comment_reviewers).with(card, 'SUSE/test', 11, [user])
