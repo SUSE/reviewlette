@@ -9,7 +9,7 @@ class GithubConnection
     @repo    = repo
   end
 
-  def list_pulls
+  def pull_requests
     @client.pull_requests(@repo)
   end
 
@@ -31,12 +31,6 @@ class GithubConnection
               "* make sure that no unnecessary FIXMEs or TODOs got added \n"
 
     @client.add_comment(@repo, number, comment)
-  end
-
-  def unassigned_pull_requests
-    # TODO I need to change that to check also for only 1 reviewer on !-PRs
-    #      and 2 reviewers on non-!-PRs (cornercase of removing the flag after first assignement
-    list_pulls.select { |issue| !issue[:assignee] }
   end
 
   def repo_exists?

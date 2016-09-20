@@ -35,10 +35,10 @@ describe GithubConnection do
     end
   end
 
-  describe '#list_pulls' do
+  describe '#pull_requests' do
     it 'lists all pullrequests for a given repository' do
       expect(connection.client).to receive(:pull_requests).with(repo)
-      connection.list_pulls
+      connection.pull_requests
     end
   end
 
