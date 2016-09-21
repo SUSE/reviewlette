@@ -13,6 +13,10 @@ class GithubConnection
     @client.pull_requests(@repo)
   end
 
+  def labels(issue)
+    @client.labels_for_issue(@repo, issue).map(&:name)
+  end
+
   def add_assignees(number, assignees)
     @client.update_issue(@repo, number, assignees: assignees)
   end

@@ -30,9 +30,9 @@ class Reviewlette
     end
 
     repo.pull_requests.each do |issue|
-      issue_id    = issue[:number]
+      issue_id = issue[:number]
       issue_title = issue[:title]
-      issue_flags = scan_flags(issue_title)
+      issue_labels = repo.labels(issue_id)
 
       puts "*** Checking GitHub pull request: #{issue_title}"
       matched = issue_title.match(/\d+[_'"]?$/)
@@ -54,7 +54,7 @@ class Reviewlette
 
       assignees = issue[:assignees].map(&:login)
       already_assigned_members = @members.select { |m| assignees.include? m['github_username'] }
-      wanted_number = how_many_should_review(issue_flags)
+      wanted_number = how_many_should_review(issue_labels)
 
       reviewers = if assignees.size > wanted_number
                     change_in_reviewers = true
@@ -81,15 +81,6 @@ class Reviewlette
     end
   end
 
-  def scan_flags(issue_title)
-    flags = issue_title[/\A\[(.*)\]/, 1]
-    if flags
-      flags.split(',').map(&:strip)
-    else
-      []
-    end
-  end
-
   def select_reviewers(card, number = 1, already_assigned = [])
     reviewers = @members
 
@@ -107,8 +98,8 @@ class Reviewlette
     reviewers.sample(number - already_assigned.size) + already_assigned
   end
 
-  def how_many_should_review(issue_flags)
-    return 2 if issue_flags.include? '!'
+  def how_many_should_review(labels)
+    return 2 if labels.include? '2 reviewers'
     1
   end
 end
