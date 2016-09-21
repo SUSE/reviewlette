@@ -82,7 +82,7 @@ describe Reviewlette do
     context 'pull request with one reviewer but two wanted (!-flag)' do
       it 'selects a second reviewer' do
         card = Trello::Card.new
-        pullrequest = { number: 11, title: '[!] pr title 42', assignees: [ {login: 'pinky'}] }
+        pullrequest = { number: 11, title: '[!] pr title 42', assignees: [OpenStruct.new({login: 'pinky'})] }
         expect(GithubConnection).to receive(:repo_exists?).and_return true
         expect(GithubConnection).to receive(:pull_requests).and_return([pullrequest])
         expect(TrelloConnection).to receive(:find_card_by_id).with(42).and_return(card)
@@ -99,7 +99,7 @@ describe Reviewlette do
     context 'pull request with two reviewers but only one wanted (removed !-flag)' do
       it 'removes one reviewer' do
         card = Trello::Card.new
-        pullrequest = { number: 11, title: 'pr title 42', assignees: [ {login: 'pinky'}, {login: 'brain'}] }
+        pullrequest = { number: 11, title: 'pr title 42', assignees: [ OpenStruct.new({login: 'pinky'}), OpenStruct.new({login: 'pinky'})] }
         expect(GithubConnection).to receive(:repo_exists?).and_return true
         expect(GithubConnection).to receive(:pull_requests).and_return([pullrequest])
         expect(TrelloConnection).to receive(:find_card_by_id).with(42).and_return(card)
@@ -115,7 +115,7 @@ describe Reviewlette do
     context 'pull request with already correct number of reviewers' do
       it 'does not assign nor comment in GitHub or Trello' do
         card = Trello::Card.new
-        pullrequest = { number: 11, title: '[!] pr title 42', assignees: [ {login: 'pinky'}, {login: 'brain'}] }
+        pullrequest = { number: 11, title: '[!] pr title 42', assignees: [ OpenStruct.new({login: 'pinky'}), OpenStruct.new({login: 'pinky'})] }
         expect(GithubConnection).to receive(:repo_exists?).and_return true
         expect(GithubConnection).to receive(:pull_requests).and_return([pullrequest])
         expect(TrelloConnection).to receive(:find_card_by_id).with(42).and_return(card)

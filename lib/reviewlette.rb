@@ -52,7 +52,7 @@ class Reviewlette
 
       puts "Found matching trello card: #{card.name}"
 
-      assignees = issue[:assignees].map { |a| a[:login] }
+      assignees = issue[:assignees].map(&:login)
       already_assigned_members = @members.select { |m| assignees.include? m['github_username'] }
       wanted_number = how_many_should_review(issue_flags)
 
@@ -102,7 +102,7 @@ class Reviewlette
     reviewers = reviewers.reject { |r| card.members.map(&:username).include? r['trello_username'] }
 
     # remove already assigned reviewers
-    reviewers = reviewers.reject { |r| already_assigned.include? r }
+    reviewers -= already_assigned
 
     reviewers.sample(number - already_assigned.size) + already_assigned
   end
