@@ -31,7 +31,7 @@ Pull request title should be: `Fix almost everything 4242`
 __Note:__ Pull requests without a matching Trello card get skipped and won't be assigned to a reviewer.
 
 ### Flags
-You can add flags to your pull request title to tell Reviewlette. Just put a pair of brackets in front of your pull request title.
+You can tweak Reviewlette's behavior with additional flags. Flags should be passed in square brackets, at the beginning of the pull request title.
 
 #### Example:
 `[!] dangerous stuff 666`
