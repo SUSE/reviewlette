@@ -5,9 +5,9 @@ describe Reviewlette do
 
   let(:reviewlette)    { subject.new }
 
-  let(:members_config) { { 'members' => [member1, member2] } }
-  let(:member1)        { { 'name' => 'test1', 'suse_username' => 'test1', 'trello_username' => 'trellotest1' } }
-  let(:member2)        { { 'name' => 'test2', 'suse_username' => 'test2', 'trello_username' => 'trellotest2' } }
+  let(:members_config) { [member1, member2] }
+  let(:member1)        { { 'name' => 'test1', 'suse_username' => 'test1', 'trello_username' => 'trellotest1', 'github_username' => 'pinky' } }
+  let(:member2)        { { 'name' => 'test2', 'suse_username' => 'test2', 'trello_username' => 'trellotest2', 'github_username' => 'brain' } }
 
   let(:github_config)  { { token: token, repos: [repo, repo2] } }
   let(:token)          { '1234' }
@@ -19,7 +19,6 @@ describe Reviewlette do
     allow(GithubConnection).to receive(:new).with(repo, token).and_return GithubConnection
     allow(YAML).to receive(:load_file).with(/github\.yml/).and_return github_config
     allow(YAML).to receive(:load_file).with(/members\.yml/).and_return members_config
-
   end
 
   describe '.new' do
@@ -39,38 +38,42 @@ describe Reviewlette do
   end
 
   describe '.check_repo' do
-    it 'skips repo when invalid' do
-      expect(GithubConnection).to receive(:repo_exists?).and_return false
-      expect { reviewlette.check_repo(repo, token) }.to output(/does not exist/).to_stdout
+    context 'invalid repo' do
+      it 'skips the repo' do
+        expect(GithubConnection).to receive(:repo_exists?).and_return false
+        expect { reviewlette.check_repo(repo, token) }.to output(/does not exist/).to_stdout
+      end
     end
 
     it 'iterates over all open pull requests and extracts trello ids from name' do
       expect(GithubConnection).to receive(:repo_exists?).and_return true
-      expect(GithubConnection).to receive(:unassigned_pull_requests).and_return([{number: 11, title: 'test_issue_12'}])
+      expect(GithubConnection).to receive(:pull_requests).and_return([{number: 11, title: 'test_issue_12'}])
+      expect(GithubConnection).to receive(:labels).and_return([])
       expect(TrelloConnection).to receive(:find_card_by_id).with(12)
 
       reviewlette.check_repo(repo, token)
     end
 
-    it 'iterates over all open pr and skip pr with no card id' do
+    it 'iterates over all pull requests and skips those with no card id' do
       expect(GithubConnection).to receive(:repo_exists?).and_return true
-      expect(GithubConnection).to receive(:unassigned_pull_requests).and_return([{ number: 11, title: 'no card id' }])
+      expect(GithubConnection).to receive(:pull_requests).and_return([{ number: 11, title: 'no card id' }])
+      expect(GithubConnection).to receive(:labels).and_return([])
 
       expect { reviewlette.check_repo(repo, token) }.to output(/Pull request not assigned to a trello card/).to_stdout
     end
 
-    it 'adds assignee and reviewer comment on github, adds comment on trello and moves card' do
+    it 'adds assignees and reviewers comment on github, adds comment on trello and moves card' do
       card        = Trello::Card.new
       user        = { 'suse_username' => 'test', 'github_username' => 'testgit', 'trello_username' => 'testtrello' }
-      pullrequest = { number: 11, title: 'test_issue_12' }
+      pullrequest = { number: 11, title: 'test_issue_12', assignees: [] }
 
       expect(GithubConnection).to receive(:repo_exists?).and_return true
-      expect(GithubConnection).to receive(:unassigned_pull_requests).and_return([pullrequest])
+      expect(GithubConnection).to receive(:pull_requests).and_return([pullrequest])
+      expect(GithubConnection).to receive(:labels).and_return([])
       expect(TrelloConnection).to receive(:find_card_by_id).with(12).and_return(card)
-      expect(reviewlette).to receive(:how_many_should_review).with(card).and_return([])
       expect(reviewlette).to receive(:select_reviewers).and_return([user])
 
-      expect(GithubConnection).to receive(:add_assignee).with(11, 'testgit')
+      expect(GithubConnection).to receive(:add_assignees).with(11, ['testgit'])
       expect(GithubConnection).to receive(:comment_reviewers).with(11, [user], card)
 
       expect(TrelloConnection).to receive(:comment_reviewers).with(card, 'SUSE/test', 11, [user])
@@ -79,12 +82,61 @@ describe Reviewlette do
       reviewlette.check_repo(repo, token)
     end
 
-    it 'does not find a reviewer' do
+    context 'pull request with one reviewer but two wanted' do
+      it 'selects a second reviewer' do
+        card = Trello::Card.new
+        pullrequest = { number: 11, title: 'pr title 42', assignees: [OpenStruct.new({login: 'pinky'})] }
+        expect(GithubConnection).to receive(:repo_exists?).and_return true
+        expect(GithubConnection).to receive(:pull_requests).and_return([pullrequest])
+        expect(GithubConnection).to receive(:labels).and_return(['2 reviewers'])
+        expect(TrelloConnection).to receive(:find_card_by_id).with(42).and_return(card)
 
+        expect(GithubConnection).to receive(:add_assignees).with(11, ['pinky', 'brain'])
+        expect(GithubConnection).to receive(:comment_reviewers).with(11, [member1, member2], card)
+        expect(TrelloConnection).to receive(:comment_reviewers).with(card, repo, 11, [member1, member2])
+        expect(TrelloConnection).to receive(:move_card_to_list).with(card, 'In review')
+        expect(reviewlette).to receive(:select_reviewers).with(card, 2, [member1]).and_return([member1, member2])
+        reviewlette.check_repo(repo, token)
+      end
+    end
+
+    context 'pull request with two reviewers but only one wanted' do
+      it 'removes one reviewer' do
+        card = Trello::Card.new
+        pullrequest = { number: 11, title: 'pr title 42', assignees: [ OpenStruct.new({login: 'pinky'}), OpenStruct.new({login: 'pinky'})] }
+        expect(GithubConnection).to receive(:repo_exists?).and_return true
+        expect(GithubConnection).to receive(:pull_requests).and_return([pullrequest])
+        expect(GithubConnection).to receive(:labels).and_return([])
+        expect(TrelloConnection).to receive(:find_card_by_id).with(42).and_return(card)
+
+        expect(GithubConnection).to receive(:add_assignees).with(11, ['pinky'])
+        expect(GithubConnection).to receive(:comment_reviewers).with(11, [member1], card)
+        expect(TrelloConnection).to receive(:comment_reviewers).with(card, repo, 11, [member1])
+        expect(TrelloConnection).to receive(:move_card_to_list).with(card, 'In review')
+        reviewlette.check_repo(repo, token)
+      end
+    end
+
+    context 'pull request with already correct number of reviewers' do
+      it 'does not assign nor comment in GitHub or Trello' do
+        card = Trello::Card.new
+        pullrequest = { number: 11, title: 'pr title 42', assignees: [ OpenStruct.new({login: 'pinky'}), OpenStruct.new({login: 'pinky'})] }
+        expect(GithubConnection).to receive(:repo_exists?).and_return true
+        expect(GithubConnection).to receive(:pull_requests).and_return([pullrequest])
+        expect(GithubConnection).to receive(:labels).and_return(['2 reviewers'])
+        expect(TrelloConnection).to receive(:find_card_by_id).with(42).and_return(card)
+
+        expect(TrelloConnection).to receive(:move_card_to_list).with(card, 'In review')
+        reviewlette.check_repo(repo, token)
+      end
+    end
+
+    it 'does not find a reviewer' do
       card = Trello::Card.new
 
       expect(GithubConnection).to receive(:repo_exists?).and_return true
-      expect(GithubConnection).to receive(:unassigned_pull_requests).and_return([{ number: 11, title: 'test_issue_12' }])
+      expect(GithubConnection).to receive(:pull_requests).and_return([{ number: 11, title: 'test_issue_12', assignees: [] }])
+      expect(GithubConnection).to receive(:labels).and_return([])
       expect(TrelloConnection).to receive(:find_card_by_id).with(12).and_return(card)
       expect(reviewlette).to receive(:select_reviewers).and_return []
 
@@ -128,23 +180,16 @@ describe Reviewlette do
   end
 
   describe '.how_many_should_review' do
-    it 'returns 1 if points of a lesser than 5' do
-      card = Trello::Card.new
-      card.name = '(4) Some sample card'
-      expect(reviewlette.how_many_should_review(card)).to eq 1
+    subject { Reviewlette.new.how_many_should_review(labels) }
+
+    context 'with "2 reviewers" label' do
+      let(:labels) { ['foo', '2 reviewers', 'bar'] }
+      it { is_expected.to eq(2) }
     end
 
-    it 'return 2 if points of a card more than 5' do
-      card = Trello::Card.new
-      card.name = '(8) Some sample card'
-      expect(reviewlette.how_many_should_review(card)).to eq 2
+    context 'with no "2 reviewers" label' do
+      let(:labels) { ['foo', 'bar'] }
+      it { is_expected.to eq(1) }
     end
-
-    it 'returns 1 if the card has no points' do
-      card = Trello::Card.new
-      card.name = 'Not estimated card'
-      expect(reviewlette.how_many_should_review(card)).to eq 1
-    end
-
   end
 end

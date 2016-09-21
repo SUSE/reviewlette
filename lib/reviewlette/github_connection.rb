@@ -9,18 +9,22 @@ class GithubConnection
     @repo    = repo
   end
 
-  def list_pulls
+  def pull_requests
     @client.pull_requests(@repo)
   end
 
-  def add_assignee(number, assignee)
-    @client.update_issue(@repo, number, assignee: assignee)
+  def labels(issue)
+    @client.labels_for_issue(@repo, issue).map(&:name)
+  end
+
+  def add_assignees(number, assignees)
+    @client.update_issue(@repo, number, assignees: assignees)
   end
 
   def comment_reviewers(number, reviewers, trello_card)
     assignees = reviewers.map { |r| "@#{r['github_username']}" }.join(' and ')
 
-    comment = "#{assignees} reviews your pull request :dancers: check #{trello_card.url} \n" \
+    comment = "#{assignees} will review your pull request :dancers: check #{trello_card.url} \n" \
               "#{assignees}: Please review this pull request using our guidelines: \n" \
               "* test for acceptance criteria / functionality \n" \
               "* check if the new code is covered with tests \n" \
@@ -31,10 +35,6 @@ class GithubConnection
               "* make sure that no unnecessary FIXMEs or TODOs got added \n"
 
     @client.add_comment(@repo, number, comment)
-  end
-
-  def unassigned_pull_requests
-    list_pulls.select { |issue| !issue[:assignee] }
   end
 
   def repo_exists?

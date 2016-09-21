@@ -3,8 +3,6 @@ require 'reviewlette/github_connection'
 require 'reviewlette/vacations'
 require 'yaml'
 
-VERSION = '0.0.11'
-
 # Assume cards have following card title when estimated
 # (8) This is the card name'
 POINTS_REGEX = /\(([\d]+)\)/
@@ -31,11 +29,12 @@ class Reviewlette
       return
     end
 
-    repo.unassigned_pull_requests.each do |issue|
-      issue_id    = issue[:number]
+    repo.pull_requests.each do |issue|
+      issue_id = issue[:number]
       issue_title = issue[:title]
+      issue_labels = repo.labels(issue_id)
 
-      puts "*** Checking unassigned github pull request: #{issue_title}"
+      puts "*** Checking GitHub pull request: #{issue_title}"
       matched = issue_title.match(/\d+[_'"]?$/)
 
       unless matched
@@ -52,23 +51,38 @@ class Reviewlette
       end
 
       puts "Found matching trello card: #{card.name}"
-      reviewers = select_reviewers(card, how_many_should_review(card))
+
+      assignees = issue[:assignees].map(&:login)
+      already_assigned_members = @members.select { |m| assignees.include? m['github_username'] }
+      wanted_number = how_many_should_review(issue_labels)
+
+      reviewers = if assignees.size > wanted_number
+                    change_in_reviewers = true
+                    already_assigned_members[0...wanted_number]
+                  elsif assignees.size < wanted_number
+                    change_in_reviewers = true
+                    select_reviewers(card, wanted_number, already_assigned_members)
+                  else
+                    change_in_reviewers = false
+                    already_assigned_members
+                  end
 
       if reviewers.empty?
         puts "Could not find a reviewer for card: #{card.name}"
         next
       end
 
-      repo.add_assignee(issue_id, reviewers.first['github_username'])
-      repo.comment_reviewers(issue_id, reviewers, card)
-
-      @trello.comment_reviewers(card, repo_name, issue_id, reviewers)
+      if change_in_reviewers
+        repo.add_assignees(issue_id, reviewers.map { |r| r['github_username'] } )
+        repo.comment_reviewers(issue_id, reviewers, card)
+        @trello.comment_reviewers(card, repo_name, issue_id, reviewers)
+      end
       @trello.move_card_to_list(card, 'In review')
     end
   end
 
-  def select_reviewers(card, number = 1)
-    reviewers = @members['members']
+  def select_reviewers(card, number = 1, already_assigned = [])
+    reviewers = @members
 
     # remove people on vacation
     members_on_vacation = Vacations.members_on_vacation(reviewers)
@@ -78,13 +92,14 @@ class Reviewlette
     # remove trello card owner
     reviewers = reviewers.reject { |r| card.members.map(&:username).include? r['trello_username'] }
 
-    reviewers.sample(number)
+    # remove already assigned reviewers
+    reviewers -= already_assigned
+
+    reviewers.sample(number - already_assigned.size) + already_assigned
   end
 
-  def how_many_should_review(card)
-    if card.name =~ POINTS_REGEX && card.name.match(POINTS_REGEX).captures.first.to_i > 5
-      return 2
-    end
+  def how_many_should_review(labels)
+    return 2 if labels.include? '2 reviewers'
     1
   end
 end

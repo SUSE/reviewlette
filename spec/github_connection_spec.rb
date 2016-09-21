@@ -16,10 +16,10 @@ describe GithubConnection do
     end
   end
 
-  describe '#add_assignee' do
-    it 'adds an assignee to the gh issue' do
-      expect(connection.client).to receive(:update_issue).with(repo, 11, :assignee => 'test')
-      connection.add_assignee(11, 'test')
+  describe '#add_assignees' do
+    it 'adds assignees to the GitHub issue' do
+      expect(connection.client).to receive(:update_issue).with(repo, 11, assignees: ['test'])
+      connection.add_assignees(11, ['test'])
     end
   end
 
@@ -35,10 +35,10 @@ describe GithubConnection do
     end
   end
 
-  describe '#list_pulls' do
+  describe '#pull_requests' do
     it 'lists all pullrequests for a given repository' do
       expect(connection.client).to receive(:pull_requests).with(repo)
-      connection.list_pulls
+      connection.pull_requests
     end
   end
 
