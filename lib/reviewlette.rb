@@ -56,10 +56,7 @@ class Reviewlette
       already_assigned_members = @members.select { |m| assignees.include? m['github_username'] }
       wanted_number = how_many_should_review(issue_labels)
 
-      reviewers = if assignees.size > wanted_number
-                    change_in_reviewers = true
-                    already_assigned_members[0...wanted_number]
-                  elsif assignees.size < wanted_number
+      reviewers = if assignees.size < wanted_number
                     change_in_reviewers = true
                     select_reviewers(card, wanted_number, already_assigned_members)
                   else

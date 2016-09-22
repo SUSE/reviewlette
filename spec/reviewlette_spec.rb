@@ -100,18 +100,16 @@ describe Reviewlette do
       end
     end
 
-    context 'pull request with two reviewers but only one wanted' do
-      it 'removes one reviewer' do
+    context 'pull request with two reviewers but no "2 reviewers" label' do
+      it 'keeps both reviewers' do
         card = Trello::Card.new
-        pullrequest = { number: 11, title: 'pr title 42', assignees: [ OpenStruct.new({login: 'pinky'}), OpenStruct.new({login: 'pinky'})] }
+        pullrequest = { number: 11, title: 'pr title 42', assignees: [ OpenStruct.new({login: 'pinky'}), OpenStruct.new({login: 'brain'})] }
         expect(GithubConnection).to receive(:repo_exists?).and_return true
         expect(GithubConnection).to receive(:pull_requests).and_return([pullrequest])
         expect(GithubConnection).to receive(:labels).and_return([])
         expect(TrelloConnection).to receive(:find_card_by_id).with(42).and_return(card)
 
-        expect(GithubConnection).to receive(:add_assignees).with(11, ['pinky'])
-        expect(GithubConnection).to receive(:comment_reviewers).with(11, [member1], card)
-        expect(TrelloConnection).to receive(:comment_reviewers).with(card, repo, 11, [member1])
+        expect(GithubConnection).not_to receive(:add_assignees)
         expect(TrelloConnection).to receive(:move_card_to_list).with(card, 'In review')
         reviewlette.check_repo(repo, token)
       end
@@ -126,6 +124,9 @@ describe Reviewlette do
         expect(GithubConnection).to receive(:labels).and_return(['2 reviewers'])
         expect(TrelloConnection).to receive(:find_card_by_id).with(42).and_return(card)
 
+        expect(GithubConnection).not_to receive(:add_assignees)
+        expect(GithubConnection).not_to receive(:comment_reviewers)
+        expect(TrelloConnection).not_to receive(:comment_reviewers)
         expect(TrelloConnection).to receive(:move_card_to_list).with(card, 'In review')
         reviewlette.check_repo(repo, token)
       end
