@@ -109,6 +109,7 @@ describe Reviewlette do
         expect(GithubConnection).to receive(:labels).and_return([])
         expect(TrelloConnection).to receive(:find_card_by_id).with(42).and_return(card)
 
+        expect(GithubConnection).not_to receive(:add_assignees)
         expect(TrelloConnection).to receive(:move_card_to_list).with(card, 'In review')
         reviewlette.check_repo(repo, token)
       end
@@ -123,6 +124,9 @@ describe Reviewlette do
         expect(GithubConnection).to receive(:labels).and_return(['2 reviewers'])
         expect(TrelloConnection).to receive(:find_card_by_id).with(42).and_return(card)
 
+        expect(GithubConnection).not_to receive(:add_assignees)
+        expect(GithubConnection).not_to receive(:comment_reviewers)
+        expect(TrelloConnection).not_to receive(:comment_reviewers)
         expect(TrelloConnection).to receive(:move_card_to_list).with(card, 'In review')
         reviewlette.check_repo(repo, token)
       end
