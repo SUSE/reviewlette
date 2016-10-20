@@ -73,8 +73,8 @@ class Reviewlette
         repo.add_assignees(issue_id, reviewers.map { |r| r['github_username'] } )
         repo.comment_reviewers(issue_id, reviewers, card)
         @trello.comment_reviewers(card, repo_name, issue_id, reviewers)
+        @trello.move_card_to_list(card, 'In review')
       end
-      @trello.move_card_to_list(card, 'In review')
     end
   end
 
