@@ -2,7 +2,6 @@ PATH
   remote: .
   specs:
     reviewlette (1.0.0)
-      net-telnet
       octokit
       ruby-trello
 
@@ -74,7 +73,6 @@ GEM
     multi_xml (0.6.0)
     multipart-post (2.0.0)
     nenv (0.3.0)
-    net-telnet (0.1.1)
     netrc (0.11.0)
     notiffany (0.1.1)
       nenv (~> 0.1)

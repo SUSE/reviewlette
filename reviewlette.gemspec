@@ -20,5 +20,4 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'ruby-trello'
   spec.add_runtime_dependency 'octokit'
-  spec.add_runtime_dependency 'net-telnet'
 end
