@@ -8,7 +8,6 @@ What it does:
 
 - Finds pull requests with missing reviewers in your GitHub repos.
 - Assigns random members of your team.
-- Takes vacations of team members into account (using tel).
 - Locates the right card in your Trello board.
 - Mentions the assigned reviewer in a comment on the card.
 - Moves the card to the 'In review' column.
@@ -16,11 +15,14 @@ What it does:
 ## Installation
 For the latest and greatest version you should `git clone https://github.com/SUSE/reviewlette`
 
-## Setup
-Copy the example config files (e.g. `cp ./config/members_example.yml ./config/members.yml)` and fill them out.
-
 ## Usage
-Regulary run `./bin/reviewlette` (e.g. with a cronjob or a systemd timer) to check for new or changed pull requests.
+```ruby
+Reviewlette.new(members: User.all, github_config: {}, trello_config: {}).run
+```
+
+Users must respond to `trello_handle` and `github_handle` methods.
+
+Examples for `github_config` and `trello_config` can be found in `config/`.
 
 ### Matching Trello cards
 To match a Trello card to a pull request, its title has to end with the card number (not the id)
