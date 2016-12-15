@@ -5,7 +5,7 @@ require 'reviewlette/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "reviewlette"
-  spec.version       = VERSION
+  spec.version       = Reviewlette::VERSION
   spec.authors       = ["jschmid1"]
   spec.email         = ["jschmid@suse.de"]
   spec.summary       = %q{Randomly assignes a reviewer to your Pullrequest and corresponding Trello Card.}
@@ -22,4 +22,3 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'octokit'
   spec.add_runtime_dependency 'net-telnet'
 end
-

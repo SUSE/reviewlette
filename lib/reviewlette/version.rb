@@ -1,1 +1,3 @@
-VERSION = '0.0.12'
+class Reviewlette
+  VERSION = '1.0.0'
+end
