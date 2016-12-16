@@ -1,17 +1,12 @@
 require 'reviewlette/trello_connection'
 require 'reviewlette/github_connection'
-require 'reviewlette/vacations'
 require 'yaml'
 
-# Assume cards have following card title when estimated
-# (8) This is the card name'
-POINTS_REGEX = /\(([\d]+)\)/
-
 class Reviewlette
-  def initialize
-    @trello  = TrelloConnection.new
-    @members = YAML.load_file("#{File.dirname(__FILE__)}/../config/members.yml")
-    @github  = YAML.load_file("#{File.dirname(__FILE__)}/../config/github.yml")
+  def initialize(members:, github_config: nil, trello_config: nil)
+    @trello  = TrelloConnection.new(trello_config)
+    @github  = github_config || YAML.load_file("#{File.dirname(__FILE__)}/../config/github.yml")
+    @members = members
   end
 
   def run
@@ -53,43 +48,29 @@ class Reviewlette
       puts "Found matching trello card: #{card.name}"
 
       assignees = issue[:assignees].map(&:login)
-      already_assigned_members = @members.select { |m| assignees.include? m['github_username'] }
+      already_assigned_members = @members.select { |m| assignees.include? m.github_handle }
       wanted_number = how_many_should_review(issue_labels)
 
-      reviewers = if assignees.size < wanted_number
-                    change_in_reviewers = true
-                    select_reviewers(card, wanted_number, already_assigned_members)
-                  else
-                    change_in_reviewers = false
-                    already_assigned_members
-                  end
-
-      if reviewers.empty?
-        puts "Could not find a reviewer for card: #{card.name}"
-        next
-      end
-
-      if change_in_reviewers
-        repo.add_assignees(issue_id, reviewers.map { |r| r['github_username'] } )
+      if assignees.size < wanted_number
+        reviewers = select_reviewers(card, wanted_number, already_assigned_members)
+        if reviewers.empty?
+          puts "Could not find a reviewer for card: #{card.name}"
+          next
+        end
+        repo.add_assignees(issue_id, reviewers.map { |r| r.github_handle } )
         repo.comment_reviewers(issue_id, reviewers, card)
         @trello.comment_reviewers(card, repo_name, issue_id, reviewers)
         @trello.move_card_to_list(card, 'In review')
+        already_assigned_members
       end
+
+
     end
   end
 
   def select_reviewers(card, number = 1, already_assigned = [])
     reviewers = @members
-
-    # remove people on vacation
-    members_on_vacation = Vacations.members_on_vacation(reviewers)
-
-    reviewers = reviewers.reject { |r| members_on_vacation.include? r['suse_username'] }
-
-    # remove trello card owner
-    reviewers = reviewers.reject { |r| card.members.map(&:username).include? r['trello_username'] }
-
-    # remove already assigned reviewers
+    reviewers.reject! { |r| card.members.map(&:username).include? r.trello_handle }
     reviewers -= already_assigned
 
     reviewers.sample(number - already_assigned.size) + already_assigned
