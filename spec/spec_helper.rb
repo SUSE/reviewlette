@@ -4,7 +4,7 @@ require 'coveralls'
 Coveralls.wear!
 
 require 'simplecov'
-SimpleCov.minimum_coverage 80
+SimpleCov.minimum_coverage 50
 SimpleCov.formatter = SimpleCov::Formatter::HTMLFormatter
 SimpleCov.start do
   add_filter '/spec'

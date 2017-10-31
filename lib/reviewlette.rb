@@ -5,8 +5,6 @@ require 'reviewlette/github_repository'
 require 'reviewlette/request'
 require 'reviewlette/pull_request'
 
-require 'yaml' # ??
-
 class Reviewlette
   def initialize(repos:, members:, board_id:)
     @repos = repos

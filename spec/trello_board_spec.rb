@@ -1,23 +1,11 @@
 require 'spec_helper'
 
-describe Reviewlette::TrelloConnection do
-  subject { described_class.new }
-  let(:card)          { Trello::Card.new }
-  let(:trello_config) { { 'consumerkey' => consumerkey, 'oauthtoken' => oauthtoken } }
-  let(:consumerkey)   { '4a6' }
-  let(:oauthtoken)    { 'a8e' }
+describe Reviewlette::TrelloBoard do
+  subject { described_class.new(123) }
+  let(:card) { Trello::Card.new }
 
   before do
     allow(Trello::Board).to receive(:find).and_return(Trello::Board.new)
-    allow(YAML).to receive(:load_file).and_return(trello_config)
-  end
-
-  describe '.new' do
-    it 'sets up trello' do
-      expect_any_instance_of(Trello::Configuration).to receive(:developer_public_key=).with(consumerkey)
-      expect_any_instance_of(Trello::Configuration).to receive(:member_token=).with(oauthtoken)
-      described_class.new
-    end
   end
 
   describe '#add_reviewer_to_card' do
