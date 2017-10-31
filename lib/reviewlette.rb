@@ -1,70 +1,76 @@
-require 'reviewlette/trello_connection'
-require 'reviewlette/github_connection'
-require 'yaml'
+require 'reviewlette/trello_board'
+
+require 'reviewlette/github_repository'
+
+require 'reviewlette/request'
+require 'reviewlette/pull_request'
+
+require 'yaml' # ??
 
 class Reviewlette
-  def initialize(members:, github_config: nil, trello_config: nil)
-    @trello  = TrelloConnection.new(trello_config)
-    @github  = github_config || YAML.load_file("#{File.dirname(__FILE__)}/../config/github.yml")
+  def initialize(repos:, members:, board_id:)
+    @repos = repos
     @members = members
+    @trello = TrelloBoard.new(board_id)
   end
 
   def run
-    @github['repos'].each do |repo|
-      puts "Checking repository #{repo}..."
-      check_repo(repo, @github['token'])
+    @repos.each do |repo|
+      puts "\nChecking repository #{repo}..."
+      check_repo(repo)
     end
   end
 
-  def check_repo(repo_name, token)
-    repo = GithubConnection.new(repo_name, token)
+  private
 
-    unless repo.repo_exists?
-      puts "Repository #{repo_name} does not exist. Check your configuration"
+  def check_repo(name)
+    repo = GithubRepository.new(name)
+
+    unless repo.exists?
+      puts "... does not exist!"
       return
     end
 
     repo.pull_requests.each do |issue|
-      issue_id = issue[:number]
-      issue_title = issue[:title]
-      issue_labels = repo.labels(issue_id)
-
-      puts "*** Checking GitHub pull request: #{issue_title}"
-      matched = issue_title.match(/\d+[_'"]?$/)
-
-      unless matched
-        puts 'Pull request not assigned to a trello card'
+      puts "Pull request: #{issue.title}"
+      unless issue.trello_card_id
+        puts '... has no card id.'
         next
       end
 
-      card_id = matched[0].to_i
-      card    = @trello.find_card_by_id(card_id)
-
+      card = @trello.find_card_by_id(issue.trello_card_id)
       unless card
-        puts "No matching card found (id #{card_id})"
+        puts "... has no matching card on the board."
         next
       end
 
-      puts "Found matching trello card: #{card.name}"
+      puts "Trello card: #{card.name}"
 
-      assignees = issue[:assignees].map(&:login)
-      already_assigned_members = @members.select { |m| assignees.include? m.github_handle }
-      wanted_number = how_many_should_review(issue_labels)
+      already_assigned_members = @members.select { |member| issue.reviewers.include? member.github_handle }
+      wanted_number = how_many_should_review(issue.labels)
 
-      if assignees.size < wanted_number
+      if issue.reviewers.size < wanted_number
         reviewers = select_reviewers(card, wanted_number, already_assigned_members)
         if reviewers.empty?
-          puts "Could not find a reviewer for card: #{card.name}"
+          puts "No reviewers available."
           next
         end
-        repo.add_assignees(issue_id, reviewers.map { |r| r.github_handle } )
-        repo.comment_reviewers(issue_id, reviewers, card)
-        @trello.comment_reviewers(card, repo_name, issue_id, reviewers)
-        @trello.move_card_to_list(card, 'In review')
-        already_assigned_members
+
+        reviewer_names = reviewers.map { |r| r.github_handle }
+        puts "Requesting review from #{reviewer_names.join(' and ')}"
+
+        begin
+          issue.request_reviewers(reviewer_names) \
+          and issue.comment_reviewers(reviewer_names, card) \
+          and @trello.comment_reviewers(card, repo.name, issue.id, reviewers) \
+          and @trello.move_card_to_list(card, 'In review')
+        rescue Octokit::UnprocessableEntity
+          puts "Failed to request review from #{reviewer_names.join(' and ')}. Check the collaborator settings of this repository!"
+        end
+      else
+        puts "Nothing to do here."
       end
-
-
+      puts ''
     end
   end
 

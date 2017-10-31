@@ -2,17 +2,12 @@ require 'yaml'
 require 'trello'
 
 class Reviewlette
-  class TrelloConnection
+  class TrelloBoard
 
     attr_accessor :board
 
-    def initialize(config = nil)
-      config ||= YAML.load_file("#{File.dirname(__FILE__)}/../../config/trello.yml")
-      Trello.configure do |conf|
-        conf.developer_public_key = config['consumerkey']
-        conf.member_token = config['oauthtoken']
-      end
-      @board = Trello::Board.find(config['board_id'])
+    def initialize(board_id)
+      @board = Trello::Board.find(board_id)
     end
 
     def add_reviewer_to_card(reviewer, card)
