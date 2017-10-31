@@ -6,11 +6,11 @@ require 'reviewlette/version'
 Gem::Specification.new do |spec|
   spec.name          = "reviewlette"
   spec.version       = Reviewlette::VERSION
-  spec.authors       = ["jschmid1"]
-  spec.email         = ["jschmid@suse.de"]
-  spec.summary       = %q{Randomly assignes a reviewer to your Pullrequest and corresponding Trello Card.}
+  spec.authors       = ["Joshua Schmidt", "Thomas Hutterer"]
+  spec.email         = ["thutterer@suse.de"]
+  spec.summary       = %q{Randomly assignes a reviewer to your GitHub pull request and corresponding Trello card.}
   spec.description   = %q{Easy, fair and trackable labor division in your team.}
-  spec.homepage      = "http://rubygems.org/gems/reviewlette"
+  spec.homepage      = "https://github.com/SUSE/reviewlette"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
