@@ -1,9 +1,0 @@
-# Get your trello keys here: https://trello.com/app-key
-consumerkey:
-
-# request the token here:
-# https://trello.com/1/authorize?key=<key from above>&name=reviewlette&expiration=never&response_type=token&scope=read,write
-oauthtoken:
-
-# The board_id can be read from the url of the board.
-board_id:

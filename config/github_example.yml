@@ -1,4 +1,0 @@
-token: # generate the token here: https://github.com/settings/tokens/new
-repos:
-  - user/repo1
-  - org/repo2
